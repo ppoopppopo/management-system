@@ -24,7 +24,7 @@ Purchase::Purchase(QWidget *parent) :
     headerLabels << "商品名/条形码" << "零售价" << "进价" << "数量" << "生产日期" << "单位" << "总额";
     ui->tableWidget->setColumnCount(headerLabels.size());
     ui->tableWidget->setHorizontalHeaderLabels(headerLabels);
-    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);//table自适应宽
 //Connect_Init();
 
 ui->lineEdit->setPlaceholderText("商品名");
@@ -230,7 +230,7 @@ void Purchase::on_listWidget_itemClicked(QListWidgetItem *item)
         qDebug()<<productInfo["bar_code"].toInt()<<productInfo["selling_price"].toInt()<<productInfo["purchase_price"].toInt()<<productInfo["unit"].toString();
 
         //向下添加一行
-        ui->tableWidget->insertRow(ui->tableWidget->rowCount());;
+        ui->tableWidget->insertRow(ui->tableWidget->rowCount());
         // 自定义各列下的单元格
         //第一列
         QTableWidgetItem *item1 = new QTableWidgetItem(productName+"/ "+productInfo["bar_code"].toInt());
@@ -292,7 +292,7 @@ void Purchase::on_listWidget_itemClicked(QListWidgetItem *item)
         widget7->setLayout(layout7);
         ui->tableWidget->setCellWidget(ui->tableWidget->rowCount()-1, 6, widget7);
 
-        ui->tableWidget->setRowHeight(ui->tableWidget->rowCount()-1, 70);//设置列宽
+        ui->tableWidget->setRowHeight(ui->tableWidget->rowCount()-1, 70);//设置行高
 
     }
 }

@@ -6,6 +6,7 @@
 #include "classification.h"
 #include "classification.h"
 #include <QStandardItemModel>
+#include<QCheckBox>
 extern shop_sql *shop;
 namespace Ui {
 class good;
@@ -19,7 +20,8 @@ public:
     explicit good(QWidget *parent = nullptr);
     void comboxs_of_classification_init();//分类列表初始化
     ~good();
-
+public slots:
+    void onItemSelectionChanged();
 private:
     Ui::good *ui;
 };

@@ -29,6 +29,7 @@ public:
     int login_checks(QString password,QString user);//检查登录账户和密码是否正确
     int father_classification_count();//父分类数量
     int SubClassifiactionsCount(QString ParentClassification);//父分类中子分类数量
+    int GoodsCount();
     QStringList father_classification_list();//父分类表
     QStringList child_classification_list(QString father_classification);//子分类表
     QStringList goods_of_ParentClassification(QString ParentClassification);

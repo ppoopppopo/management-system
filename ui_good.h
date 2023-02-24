@@ -19,7 +19,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
-#include <QtWidgets/QTableView>
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -51,7 +51,7 @@ public:
     QComboBox *comboBox_2;
     QSpacerItem *horizontalSpacer;
     QHBoxLayout *horizontalLayout_4;
-    QTableView *tableView;
+    QTableWidget *tableWidget;
     QVBoxLayout *VLayoutClassification;
 
     void setupUi(QWidget *good)
@@ -236,7 +236,6 @@ public:
         horizontalLayout->setStretch(3, 1);
         horizontalLayout->setStretch(4, 1);
         horizontalLayout->setStretch(5, 1);
-        horizontalLayout->setStretch(6, 1);
         horizontalLayout->setStretch(7, 2);
 
         verticalLayout_2->addLayout(horizontalLayout);
@@ -244,12 +243,12 @@ public:
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setSpacing(7);
         horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
-        tableView = new QTableView(good);
-        tableView->setObjectName(QString::fromUtf8("tableView"));
-        sizePolicy2.setHeightForWidth(tableView->sizePolicy().hasHeightForWidth());
-        tableView->setSizePolicy(sizePolicy2);
+        tableWidget = new QTableWidget(good);
+        tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
+        sizePolicy2.setHeightForWidth(tableWidget->sizePolicy().hasHeightForWidth());
+        tableWidget->setSizePolicy(sizePolicy2);
 
-        horizontalLayout_4->addWidget(tableView);
+        horizontalLayout_4->addWidget(tableWidget);
 
         VLayoutClassification = new QVBoxLayout();
         VLayoutClassification->setSpacing(0);
@@ -257,7 +256,7 @@ public:
 
         horizontalLayout_4->addLayout(VLayoutClassification);
 
-        horizontalLayout_4->setStretch(0, 12);
+        horizontalLayout_4->setStretch(0, 15);
         horizontalLayout_4->setStretch(1, 1);
 
         verticalLayout_2->addLayout(horizontalLayout_4);
@@ -287,7 +286,7 @@ public:
         comboBox->setItemText(1, QCoreApplication::translate("good", "\345\210\240\351\231\244\345\267\262\351\200\211\345\225\206\345\223\201", nullptr));
         comboBox->setItemText(2, QCoreApplication::translate("good", "\346\214\211\345\210\206\347\261\273\345\210\240\351\231\244", nullptr));
 
-        pushButton->setText(QCoreApplication::translate("good", "\350\256\276\347\275\256\345\210\206\347\261\273", nullptr));
+        pushButton->setText(QCoreApplication::translate("good", "\345\210\240\351\231\244", nullptr));
         pushButton_2->setText(QCoreApplication::translate("good", "\350\207\252\345\212\250\347\224\237\346\210\220\346\235\241\347\240\201", nullptr));
         pushButton_3->setText(QCoreApplication::translate("good", "\350\256\276\347\275\256\345\215\225\344\275\215", nullptr));
         pushButton_4->setText(QCoreApplication::translate("good", "\346\211\271\351\207\217\346\224\271\344\273\267", nullptr));
