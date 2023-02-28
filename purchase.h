@@ -28,7 +28,7 @@ public:
 
 
 void on_ParentClassification_clicked(QPushButton* button);//点击父分类后事件
-void on_SubClassification_clicked(QString ParentClassification,int ButtonParentClassificationLocation);//点击子分类后事件
+void on_SubClassification_clicked(QString ParentClassification);//点击子分类后事件
 void GoodsInformationRight_Update(QJsonArray goods);//进货左界面更新商品信息
 //void Connect_Init();//信号槽部署
 public slots:

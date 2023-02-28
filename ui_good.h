@@ -286,7 +286,7 @@ public:
         comboBox->setItemText(1, QCoreApplication::translate("good", "\345\210\240\351\231\244\345\267\262\351\200\211\345\225\206\345\223\201", nullptr));
         comboBox->setItemText(2, QCoreApplication::translate("good", "\346\214\211\345\210\206\347\261\273\345\210\240\351\231\244", nullptr));
 
-        pushButton->setText(QCoreApplication::translate("good", "\345\210\240\351\231\244", nullptr));
+        pushButton->setText(QCoreApplication::translate("good", "\345\210\240\351\231\244\351\200\211\344\270\255\345\225\206\345\223\201", nullptr));
         pushButton_2->setText(QCoreApplication::translate("good", "\350\207\252\345\212\250\347\224\237\346\210\220\346\235\241\347\240\201", nullptr));
         pushButton_3->setText(QCoreApplication::translate("good", "\350\256\276\347\275\256\345\215\225\344\275\215", nullptr));
         pushButton_4->setText(QCoreApplication::translate("good", "\346\211\271\351\207\217\346\224\271\344\273\267", nullptr));

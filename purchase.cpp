@@ -55,15 +55,15 @@ void Purchase::comboxs_of_classification_init()
 {
 
 
-   classification *vlayout=new classification(ui->VLayoutClassification,1);
-   vlayout->classificationUI_init();
-   connect(vlayout, &classification::parentClassificationClicked, this, &Purchase::on_parentClassificationClicked);
+    classification *vlayout=new classification(ui->VLayoutClassification,1);
+    vlayout->classificationUI_init();//初始化编辑分类界面
+    connect(vlayout, &classification::Purchase_parentClassificationClicked, this, &Purchase::on_parentClassificationClicked);//分类管理的父分类点击事件
+   connect(vlayout, &classification::Purchase_subClassificationClicked, this, &Purchase::on_SubClassification_clicked);//分类管理的父分类点击事件
 }
 
 void Purchase::on_ParentClassification_clicked(QPushButton* button)
 {
     qDebug()<<ui->VLayoutClassification->indexOf(button)<<button->text();
-    int ButtonParentClassificationLocation=ui->VLayoutClassification->indexOf(button)+1;
     QString str=button->text();
     QString ParentClassification;
     QStringList SubClassifications;
@@ -80,50 +80,11 @@ void Purchase::on_ParentClassification_clicked(QPushButton* button)
     //获取在ParentClassification里的商品列表
     QJsonArray goods=shop->Name_PurchasePrice_Inventory_of_goods(ParentClassification,true);
     GoodsInformationRight_Update(goods);
-   // QStringList goods_of_ParentClassification=shop->goods_of_ParentClassification(ParentClassification)1;//QStringList待定
-    //......
-    if(str[i+1]=="▼")
-    {
-        //还没展开的父分类，下面进行展开操作
-        SubClassifications=shop->child_classification_list(ParentClassification);
-        //更新按钮
-        button->setText(ParentClassification+" ▲");
-        for (i=0;i<SubClassifications.size();i++)
-        {
-            QPushButton *ButtonSubClassification=new QPushButton(SubClassifications[i]);
-            QString SubClassification_Name=SubClassifications[i];
-            ButtonSubClassification->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-            ui-> VLayoutClassification->insertWidget(ButtonParentClassificationLocation+i,ButtonSubClassification);
 
-            //子分类点击槽函数
-            connect(ButtonSubClassification,&QPushButton::clicked,[this,SubClassification_Name,ButtonParentClassificationLocation]()
-            {
-                on_SubClassification_clicked(SubClassification_Name,ButtonParentClassificationLocation);
-            }
-            );
-
-        }
-
-    }
-    else if(str[i+1]=="▲")
-    {
-        //已展开的父分类，下面进行删除父分类下的子分类相应的按钮
-        int numChildren = shop->SubClassifiactionsCount(ParentClassification);
-        //更新按钮
-        button->setText(ParentClassification+" ▼");
-        qDebug()<<ParentClassification<<"的子分类数量为"<<numChildren;
-        for (int j = 0; j < numChildren; j++)
-        {
-            QWidget* widget = ui->VLayoutClassification->itemAt(ButtonParentClassificationLocation)->widget();
-            ui->VLayoutClassification->removeWidget(widget);
-            delete widget;
-        }
-    }
-    qDebug()<<ParentClassification<<"拥有的子分类"<<SubClassifications;
 
 }
 
-void Purchase::on_SubClassification_clicked(QString SubClassification_Name, int ButtonParentClassificationLocation)
+void Purchase::on_SubClassification_clicked(QString SubClassification_Name)
 {
     //通过父分类去shop_sql类返回一个子分类列表显示在进货左界面
     QJsonArray goods=shop->Name_PurchasePrice_Inventory_of_goods(SubClassification_Name,false);

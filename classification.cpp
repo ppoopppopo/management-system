@@ -81,7 +81,9 @@ void classification::on_ParentClassification_clicked(QPushButton *button)
     switch (choose)
     {
         case 1:
-        emit parentClassificationClicked(ParentClassification);
+        emit Purchase_parentClassificationClicked(ParentClassification);
+        case 2:
+        emit Good_parentClassificationClicked(ParentClassification);
         break;
 
     }
@@ -101,7 +103,7 @@ void classification::on_ParentClassification_clicked(QPushButton *button)
             //子分类点击槽函数
             connect(ButtonSubClassification,&QPushButton::clicked,[this,SubClassification_Name,ButtonParentClassificationLocation]()
             {
-               // on_SubClassification_clicked(SubClassification_Name,ButtonParentClassificationLocation);
+               on_SubClassification_clicked(SubClassification_Name,ButtonParentClassificationLocation);
             }
             );
 
@@ -123,6 +125,19 @@ void classification::on_ParentClassification_clicked(QPushButton *button)
         }
     }
     qDebug()<<ParentClassification<<"拥有的子分类"<<SubClassifications;
+}
+
+void classification::on_SubClassification_clicked(QString SubClassification_Name, int)
+{
+    switch (choose)
+    {
+        case 1:
+        emit Purchase_subClassificationClicked(SubClassification_Name);
+        case 2:
+        //emit Good_parentClassificationClicked(ParentClassification);
+        break;
+
+    }
 }
 void classification::classificationUI_init()
 {

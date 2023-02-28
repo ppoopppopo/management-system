@@ -34,17 +34,30 @@ good::good(QWidget *parent) :
 
         ui->tableWidget->setRowHeight(ui->tableWidget->rowCount()-1, 40);//设置行高
     }
+    ui->tableWidget->setAlternatingRowColors(true);//表格的行是否用交替底色显示
     //把ui->pushButton设置为不可点击
     ui->pushButton->setEnabled(false);
-    //如果有选中一个或多个行表头，则解除ui->pushButton的不能点击
+    //选中单元格槽函数
     connect(ui->tableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onItemSelectionChanged()));
     //当选中一个或多个某行表头时表示即将要删除该行的商品数据，点击ui->pushButton之后提示确认要删除
+
+    //检测单元格更改
+    connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(on_cell_changed(int, int)));
+//    // 监听单元格双击信号
+//    connect(ui->tableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(on_cell_double_clicked(int, int)));
+    // 监听selectionChanged()信号(选中行)
+    //QItemSelection和QModelIndex类分别表示选择和索引的模型。这些参数提供了选择模型变化前和变化后的选中项和取消选中项的信息
+    connect(ui->tableWidget->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            this, SLOT(on_selection_changed(const QItemSelection&, const QItemSelection&)));
+
 
 }
 
 void good::comboxs_of_classification_init()
 {
     classification *vlayout=new classification(ui->VLayoutClassification,2);
+    vlayout->classificationUI_init();//初始化编辑分类界面
+    connect(vlayout, &classification::Good_parentClassificationClicked, this, &good::on_parentClassificationClicked);
 }
 
 good::~good()
@@ -52,36 +65,75 @@ good::~good()
     delete ui;
 }
 
+void good::on_parentClassificationClicked()
+{
+    qDebug()<<"点击商品界面的父分类";
+    ui->tableWidget->clear();
+    // 设置列数
+    ui->tableWidget->setColumnCount(8);
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "商品名称" << "条码" << "分类" << "售价" << "会员价" << "进价" << "库存" << "单位");
+}
+
 void good::onItemSelectionChanged()
 {
-    int selectedRowCount = ->selectedRows().count();
-    QList<QModelIndex>a=ui->tableWidget->selectionModel()->selectedRows();
-    qDebug()<<selectedRowCount;
-    qDebug()<<a;
-    qDebug()<<a.size();
-//    for (int i=0;a.size();i++) {
-//        qDebug()<<a[i].row();
-//    }
+//    QList<QModelIndex>a=ui->tableWidget->selectionModel()->selectedRows();//获取QTableWidget中用户选择的行QModelIndex,，其中每个对象表示用户选择的一行
+//    //QModelIndex对象包含有关模型中项目的索引信息
+//    if(a.size()>0)//出现选中行
+//    {
+//        qDebug()<<"QModelIndex对象"<<a;qDebug()<<"QModelIndex对象个数"<<a.size();
+//        for (int i=0;i<a.size();i++)
+//        {
+//            int row = a.at(i).row();
+//            qDebug() << "当前操作的行数"<<row;
+//            //将选中的行储存起来，为了后面用户删除商品
 
-QModelIndex *aa=ui->tableWidget->selectionModel();
 
-
-
-//    if (selectedRowCount > 0) {
-//        qDebug() << "Selected row header count: " << selectedRowCount;
-//        //输出选中的垂直表头在表格的第几行
-//        //获取所有选中的行表头
-//        QList<QTableWidgetItem*> selectedHeaders = ui->tableWidget->selectedItems();
-//        //遍历所有选中的行表头
-//        for (int i = 0; i < selectedHeaders.size(); i++) {
-//        QTableWidgetItem *headerItem = selectedHeaders[i];
-//        //获取该行表头所在的行数
-//        int row = ui->tableWidget->row(headerItem);
-//        qDebug() << "Selected row header: " << headerItem->text() << " at row index: " << row;
 //        }
-//    } else {
-//        qDebug() << "No row header selected.";
+
 //    }
+//    else
+//    {
+
+//    }
+ ui->pushButton->setEnabled(false);
+
+
+
+
+}
+
+void good::on_cell_changed(int row, int column)
+{
+    // 获取更改后的单元格数据
+    QTableWidgetItem *header_item = ui->tableWidget->horizontalHeaderItem(column);
+    QString header_text = header_item->text();
+        QTableWidgetItem *item1 = ui->tableWidget->item(row, column);
+        QString new_data = item1->text();
+        QTableWidgetItem * item2=ui->tableWidget->item( row,0);
+        QString shop_name=item2->text();
+        qDebug() << "商品名" << shop_name << ",更改属性 " << header_text << " 更改为: " << new_data;
+}
+
+void good::on_selection_changed(const QItemSelection& , const QItemSelection&)
+{
+    rows.clear();//删除之前储存的即将删除的商品行
+    QModelIndexList indexes = ui->tableWidget->selectionModel()->selectedRows();
+    //foreach语法遍历选中的QModelIndexList对象indexes，其中QModelIndex表示Qt框架中的一个单元格或者列表项的模型索引
+    foreach (QModelIndex index, indexes) //index会被设置为QModelIndexList对象中的一个元素，然后我们可以使用index对象的row()方法来获取该索引对应的行号
+    {
+        int row = index.row();
+        if (!rows.contains(row))
+        {
+            //把删除按钮设置为可点击
+            ui->pushButton->setEnabled(true);
+            rows.append(row);
+            QTableWidgetItem * item=ui->tableWidget->item(row,0);
+            QString shop_name=item->text();
+            qDebug()<<shop_name;
+        }
+    }
+    qDebug() << "Selected rows: " << rows;
 
 }
 
