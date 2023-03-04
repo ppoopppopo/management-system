@@ -260,12 +260,69 @@ QJsonArray shop_sql::goods_list()
             temp["selling_price"]=query.value(3).toDouble();
             temp["member_price"]=query.value(4).toDouble();
             temp["purchase_price"]=query.value(5).toDouble();
-            temp["inventory"]=query.value(6).toString();
+            temp["inventory"]=query.value(6).toInt();
             temp["unit"]=query.value(7).toString();
             list.append(temp);
         }
     }
     return list;
+}
+
+QJsonArray shop_sql::goods_list_by_classification(QString Conditional, bool ParentClassification)
+{
+    QSqlQuery query;
+    QJsonArray goods;
+    qDebug()<<"Conditional:"<<Conditional;
+    //无论Conditional为父分类或子分类都要先根据Conditional提取商品相关信息
+    if(query.exec("select * from goods where classification = '"+Conditional+"'"))
+    {
+        while (query.next())
+        {
+            QJsonObject temp;
+            temp["name"]=query.value(0).toString();
+            temp["bar_code"]=query.value(1).toInt();
+            temp["classification"]=query.value(2).toString();
+            temp["selling_price"]=query.value(3).toDouble();
+            temp["member_price"]=query.value(4).toDouble();
+            temp["purchase_price"]=query.value(5).toDouble();
+            temp["inventory"]=query.value(6).toInt();
+            temp["unit"]=query.value(7).toString();
+            goods.append(temp);
+
+        }
+    }
+
+    if(ParentClassification==true)//继续查找Conditional下的子分类有没有对应的商品
+    {
+        if(query.exec("select SubClassification from Classification where ParentClassification ='"+Conditional+"'"))
+        {
+            while (query.next())
+            {
+                QSqlQuery query2;
+                if(query2.exec("select * from goods where classification ='"+query.value(0).toString()+"'"))
+                {
+                    while (query2.next())
+                    {
+
+                        QJsonObject temp;
+                        temp["name"]=query2.value(0).toString();
+                        temp["bar_code"]=query2.value(1).toInt();
+                        temp["classification"]=query2.value(2).toString();
+                        temp["selling_price"]=query2.value(3).toDouble();
+                        temp["member_price"]=query2.value(4).toDouble();
+                        temp["purchase_price"]=query2.value(5).toDouble();
+                        temp["inventory"]=query2.value(6).toInt();
+                        temp["unit"]=query2.value(7).toString();
+                        qDebug()<<"temp:"<<temp;
+                        goods.append(temp);
+
+                    }
+
+                }
+            }
+        }
+    }
+    return goods;
 }
 
 

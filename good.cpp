@@ -18,10 +18,39 @@ good::good(QWidget *parent) :
     //添加每行数据
     QJsonArray shops=shop->goods_list();
     qDebug()<<shops;
-    for (int i=0;i<shops.size();i++) {
+    tablewidget_update(shops);
+    ui->tableWidget->setAlternatingRowColors(true);//表格的行是否用交替底色显示
+    //把ui->pushButton设置为不可点击
+    ui->pushButton->setEnabled(false);
+    //选中单元格槽函数
+    connect(ui->tableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onItemSelectionChanged()));
+    //当选中一个或多个某行表头时表示即将要删除该行的商品数据，点击ui->pushButton之后提示确认要删除
+
+    //检测单元格更改
+        connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(on_cell_changed(int, int)));
+    //    // 监听单元格双击信号
+    //    connect(ui->tableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(on_cell_double_clicked(int, int)));
+        // 监听selectionChanged()信号(选中行)
+        //QItemSelection和QModelIndex类分别表示选择和索引的模型。这些参数提供了选择模型变化前和变化后的选中项和取消选中项的信息
+        connect(ui->tableWidget->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+                this, SLOT(on_selection_changed(const QItemSelection&, const QItemSelection&)));
+
+}
+
+void good::comboxs_of_classification_init()
+{
+    classification *vlayout=new classification(ui->VLayoutClassification,2);
+    vlayout->classificationUI_init();//初始化编辑分类界面
+    connect(vlayout, &classification::Good_parentClassificationClicked, this, &good::on_parentClassificationClicked);
+}
+
+void good::tablewidget_update(QJsonArray goods)
+{
+    user_edit=false;
+    for (int i=0;i<goods.size();i++) {
         //向下添加一行
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-        QJsonObject shop=shops[i].toObject();
+        QJsonObject shop=goods[i].toObject();
         qDebug()<<shop;
         ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, new QTableWidgetItem(shop["name"].toString())); // 将名称插入到第 1 列
         ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, new QTableWidgetItem(QString::number(shop["bar_code"].toInt()))); // 将条码插入到第 2 列
@@ -34,30 +63,7 @@ good::good(QWidget *parent) :
 
         ui->tableWidget->setRowHeight(ui->tableWidget->rowCount()-1, 40);//设置行高
     }
-    ui->tableWidget->setAlternatingRowColors(true);//表格的行是否用交替底色显示
-    //把ui->pushButton设置为不可点击
-    ui->pushButton->setEnabled(false);
-    //选中单元格槽函数
-    connect(ui->tableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onItemSelectionChanged()));
-    //当选中一个或多个某行表头时表示即将要删除该行的商品数据，点击ui->pushButton之后提示确认要删除
-
-    //检测单元格更改
-    connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(on_cell_changed(int, int)));
-//    // 监听单元格双击信号
-//    connect(ui->tableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(on_cell_double_clicked(int, int)));
-    // 监听selectionChanged()信号(选中行)
-    //QItemSelection和QModelIndex类分别表示选择和索引的模型。这些参数提供了选择模型变化前和变化后的选中项和取消选中项的信息
-    connect(ui->tableWidget->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            this, SLOT(on_selection_changed(const QItemSelection&, const QItemSelection&)));
-
-
-}
-
-void good::comboxs_of_classification_init()
-{
-    classification *vlayout=new classification(ui->VLayoutClassification,2);
-    vlayout->classificationUI_init();//初始化编辑分类界面
-    connect(vlayout, &classification::Good_parentClassificationClicked, this, &good::on_parentClassificationClicked);
+    user_edit=true;
 }
 
 good::~good()
@@ -65,14 +71,17 @@ good::~good()
     delete ui;
 }
 
-void good::on_parentClassificationClicked()
+void good::on_parentClassificationClicked(QString ParentClassification)
 {
-    qDebug()<<"点击商品界面的父分类";
+    qDebug()<<"点击商品界面的父分类"<<ParentClassification;
     ui->tableWidget->clear();
     // 设置列数
     ui->tableWidget->setColumnCount(8);
     ui->tableWidget->setRowCount(0);
     ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "商品名称" << "条码" << "分类" << "售价" << "会员价" << "进价" << "库存" << "单位");
+    QJsonArray goods=shop->goods_list_by_classification(ParentClassification,true);
+    qDebug()<<goods;
+    tablewidget_update(goods);
 }
 
 void good::onItemSelectionChanged()
@@ -105,15 +114,20 @@ void good::onItemSelectionChanged()
 
 void good::on_cell_changed(int row, int column)
 {
-    // 获取更改后的单元格数据
-    QTableWidgetItem *header_item = ui->tableWidget->horizontalHeaderItem(column);
-    QString header_text = header_item->text();
+    qDebug()<<"user_edit"<<user_edit;
+    if(user_edit==true)
+    {
+        // 获取更改后的单元格数据
+        QTableWidgetItem *header_item = ui->tableWidget->horizontalHeaderItem(column);
+        QString header_text = header_item->text();
         QTableWidgetItem *item1 = ui->tableWidget->item(row, column);
         QString new_data = item1->text();
         QTableWidgetItem * item2=ui->tableWidget->item( row,0);
         QString shop_name=item2->text();
         qDebug() << "商品名" << shop_name << ",更改属性 " << header_text << " 更改为: " << new_data;
+    }
 }
+
 
 void good::on_selection_changed(const QItemSelection& , const QItemSelection&)
 {
@@ -137,3 +151,21 @@ void good::on_selection_changed(const QItemSelection& , const QItemSelection&)
 
 }
 
+
+
+void good::on_pushButton_clicked()
+{
+    // 弹出确认对话框
+    QMessageBox::StandardButton confirmButton = QMessageBox::warning(this, tr("确认删除"),
+                                                                     tr("确认删除所选的商品吗？"), QMessageBox::Yes | QMessageBox::No);
+    if (confirmButton == QMessageBox::Yes)
+    {
+        //qSort()方法将所有行号排序。这个排序是为了避免删除行号时发生变化。
+        qSort(rows);
+        //最后，我们遍历所有行号，从后往前调用removeRow()方法来删除行。注意，在删除行的时候，要从后往前删除，否则删除的行号会发生变化
+        for (int i = rows.size() - 1; i >= 0; --i)
+        {
+            ui->tableWidget->removeRow(rows[i]);
+        }
+    }
+}
