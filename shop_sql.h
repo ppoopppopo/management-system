@@ -36,9 +36,11 @@ public:
     bool father_classification_onlyone(QString father_classification);//判断父分类是否有子分类，有就返回false
     QJsonArray goods_list();
     QJsonArray goods_list_by_classification(QString Conditional,bool ParentClassification);//通过分类名获取商品
-    QJsonArray end_of_searching(QString text);
-    QJsonArray Name_PurchasePrice_Inventory_of_goods(QString Conditional,bool ParentClassification);
+    QJsonArray end_of_searching(QString text);//根据text找商品
+    QJsonArray Name_PurchasePrice_Inventory_of_goods(QString Conditional,bool ParentClassification);//根据父、子分类返回商品名、库存的商品列表
     QJsonObject PurchaseLeft_GoodImformation(QString name);
+    bool delete_goods_by_goodName1(QStringList);
+    bool delete_goods_by_goodName2(QStringList);
 
 
 signals:

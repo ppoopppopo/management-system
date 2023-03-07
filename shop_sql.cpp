@@ -395,3 +395,47 @@ QJsonObject shop_sql::PurchaseLeft_GoodImformation(QString name)
 
 }
 
+
+bool shop_sql::delete_goods_by_goodName1(QStringList goodsNames)
+{
+    QSqlQuery query(database);
+    QString sql = "DELETE FROM goods WHERE name = ?";
+    if (!query.prepare(sql)) {
+        qDebug() << "Failed to prepare SQL command:" << query.lastError().text();
+        return false;
+    }
+    for (const QString& goodName : goodsNames) {
+        query.bindValue(0, goodName);
+        if (!query.exec()) {
+            qDebug() << "Failed to delete product" << goodName << ":" << query.lastError().text();
+            return false;
+        }
+    }
+    return true;
+}
+bool shop_sql::delete_goods_by_goodName2(QStringList goodsNames)
+{
+    if (goodsNames.isEmpty()) {
+        qDebug() << "Empty goods list, nothing to delete.";
+        return false;
+    }
+
+    // 构造 SQL 删除语句,使用了 QString("?,").repeated(goods.size() - 1) 构造了一个形如 ?,?,?,... 的字符串，表示 IN 子句中的占位符。
+    //然后将 goods 列表作为参数传递给 addBindValue() 函数即可，无需构造额外的 QVariantList 对象。
+    QString sql = "DELETE FROM products WHERE name IN (" + QString("?,").repeated(goodsNames.size() - 1) + "?)";
+
+    // 执行 SQL 删除语句
+    QSqlQuery query(database);
+    if (!query.prepare(sql)) {
+        qDebug() << "Failed to prepare SQL command:" << query.lastError().text();
+        return false;
+    }
+    query.addBindValue(goodsNames);
+    if (!query.execBatch()) {
+        qDebug() << "Failed to delete products:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+

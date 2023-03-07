@@ -8,7 +8,8 @@
 #include <QStandardItemModel>
 #include<QCheckBox>
 #include<QTableWidget>
-
+#include<QCloseEvent>
+#include<QMap>
 extern shop_sql *shop;
 namespace Ui {
 class good;
@@ -19,11 +20,13 @@ class good : public QWidget
     Q_OBJECT
 
 public:
-QList<int> rows;//即将删除的商品行
+
     explicit good(QWidget *parent = nullptr);
     void comboxs_of_classification_init();//分类列表初始化
+    void tablewidgetInit();
     void tablewidget_update(QJsonArray);
     bool user_edit=false;
+    bool deleting_goods=false;
     ~good();
 public slots:
     void on_parentClassificationClicked(QString);//点击父分类槽函数
@@ -34,6 +37,13 @@ private slots:
     void on_pushButton_clicked();
 
 private:
+    QMap<QString, QString>goodName_temporary;//商品名临时储存，key为商品名最初名，value为最近商品更改名
+    QString goodName_recently;//最近选中的商品名
+    void closeEvent(QCloseEvent *event) override;
+    QList<int> rows;//即将删除的商品行
+    QMap<QString, QJsonObject> modify_goods; // 定义一个QMap对象，键是商品名，值是QJsonObject对象，表示商品的属性
+    QStringList goodsNames;
+    QJsonArray original_goods;//商品原始数据
     Ui::good *ui;
 
 
