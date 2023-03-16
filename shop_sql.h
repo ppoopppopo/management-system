@@ -39,8 +39,13 @@ public:
     QJsonArray end_of_searching(QString text);//根据text找商品
     QJsonArray Name_PurchasePrice_Inventory_of_goods(QString Conditional,bool ParentClassification);//根据父、子分类返回商品名、库存的商品列表
     QJsonObject PurchaseLeft_GoodImformation(QString name);
-    bool delete_goods_by_goodName1(QStringList);
-    bool delete_goods_by_goodName2(QStringList);
+    bool delete_goods_by_goodName1(QStringList);//通过商品名删除商品1
+    bool delete_goods_by_goodName2(QStringList);//2
+    QStringList goodsNames_list();//商品名表
+    //bool newData_goodname(QString);
+    bool newData_barcode(QString);
+    bool newData_classification(QString);
+    //bool newData_sellingprice(QString);
 
 
 signals:

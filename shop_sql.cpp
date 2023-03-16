@@ -255,12 +255,12 @@ QJsonArray shop_sql::goods_list()
         {
             QJsonObject temp;
             temp["name"]=query.value(0).toString();
-            temp["bar_code"]=query.value(1).toInt();
+            temp["bar_code"]=query.value(1).toString();
             temp["classification"]=query.value(2).toString();
-            temp["selling_price"]=query.value(3).toDouble();
-            temp["member_price"]=query.value(4).toDouble();
-            temp["purchase_price"]=query.value(5).toDouble();
-            temp["inventory"]=query.value(6).toInt();
+            temp["selling_price"]=query.value(3).toString();
+            temp["member_price"]=query.value(4).toString();
+            temp["purchase_price"]=query.value(5).toString();
+            temp["inventory"]=query.value(6).toString();
             temp["unit"]=query.value(7).toString();
             list.append(temp);
         }
@@ -437,5 +437,58 @@ bool shop_sql::delete_goods_by_goodName2(QStringList goodsNames)
     }
     return true;
 }
+
+QStringList shop_sql::goodsNames_list()
+{
+    QStringList goodsNames;
+    QSqlQuery query(database);
+    query.exec("select name from goods");
+    while(query.next())
+    {
+        goodsNames.append(query.value(0).toString());
+    }
+    return goodsNames;
+}
+
+bool shop_sql::newData_barcode(QString bar_code)
+{
+    QSqlQuery query(database);
+    qDebug()<<query.exec(QString("select bar_code from goods where bar_code='%1'").arg(bar_code.toInt()));
+    if(query.next())
+    {
+        qDebug()<<"找到条码"<<query.value(0);
+        return false;
+    }
+    return true;
+}
+
+bool shop_sql::newData_classification(QString classification)
+{
+    QSqlQuery query(database);
+    qDebug()<<query.exec(QString("select classification from goods where bar_code='%1'").arg(classification));
+    if(query.next())
+    {
+        qDebug()<<"找到分类"<<query.value(0);
+        return true;
+    }
+    return false;
+}
+
+//bool shop_sql::newData_sellingprice(QString)
+//{
+
+//}
+
+//bool shop_sql::newData_goodname(QString newData_goodName)
+//{
+//    QSqlQuery query(database);
+//    query.exec("select name from goods where name='"+newData_goodName+"'");
+//    if(query.next())
+//    {
+//        qDebug()<<"找到商品名"<<query.value(0);
+//        return false;
+//    }
+//    return true;
+//}
 
 
