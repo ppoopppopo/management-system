@@ -29,28 +29,156 @@ shop_sql::shop_sql()
     }
     QSqlQuery sql_query(database);//创建数据库操作对象
     //建账户表
-    if(sql_query.exec("CREATE TABLE IF NOT EXISTS accounts (name TEXT,sex TEXT,age BIGINT,password TEXT,user TEXT PRIMARY KEY,creat_time TEXT,other BIGINT);"))
+    if(sql_query.exec("CREATE TABLE IF NOT EXISTS Accounts ("
+                      "Name TEXT,"
+                      "Sex TEXT,"
+                      "Age INTEGER,"
+                      "Password TEXT,"
+                      "Username TEXT PRIMARY KEY,"
+                      "CreateTime TEXT,"
+                      "Other BIGINT);"))
     {
-        qDebug()<<"CREATE table accounts ok";
+        qDebug() << "CREATE table Accounts OK";
     }
+    else
+    {
+        qDebug() << "Error creating table Accounts:" << sql_query.lastError().text();
+    }
+
     //建商品表
     if(sql_query.exec("CREATE TABLE IF NOT EXISTS goods (name TEXT,bar_code BIGINT,classification TEXT,selling_price DOUBLE,member_price DOUBLE,purchase_price DOUBLE,inventory INT,unit TEXT);"))
     {
         qDebug()<<"CREATE table goods ok";
     }
+//    if(sql_query.exec("CREATE TABLE IF NOT EXISTS Goods ("
+//                      "Name TEXT,"
+//                      "BarCode BIGINT,"
+//                      "Classification TEXT,"
+//                      "SellingPrice DOUBLE,"
+//                      "MemberPrice DOUBLE,"
+//                      "PurchasePrice DOUBLE,"
+//                      "Inventory INTEGER,"
+//                      "Unit TEXT);"))
+//    {
+//        qDebug() << "CREATE table Goods OK";
+//    }
+//    else
+//    {
+//        qDebug() << "Error creating table Goods:" << sql_query.lastError().text();
+//    }
+
     //建分类表
-    if(sql_query.exec("CREATE TABLE IF NOT EXISTS Classification (FatherClassification TEXT PRIMARY KEY,Subclassification TEXT PRIMARY KEY);"))
+    if(sql_query.exec("CREATE TABLE Classification ("
+                      "ParentClassification TEXT NOT NULL,"
+                      "Subclassification    TEXT,"
+                      "PRIMARY KEY ("
+                      "ParentClassification,"
+                      "Subclassification"
+                      "),"
+                      "CHECK (ParentClassification <> Subclassification)"
+                      ");"
+                      ))
     {
         qDebug()<<"CREATE table Classification ok";
     }
     //建供应商表
-    if(sql_query.exec("CREATE TABLE IF NOT EXISTS Vendors (VendorName TEXT,Contact TEXT,Phonenumber BIGINT);"))
+    if(sql_query.exec("CREATE TABLE IF NOT EXISTS Vendors ("
+                      "VendorName TEXT,"
+                      "Contact TEXT,"
+                      "PhoneNumber BIGINT);"))
     {
-        qDebug()<<"CREATE table Vendors ok";
+        qDebug() << "CREATE table Vendors OK";
+    }
+    else
+    {
+        qDebug() << "Error creating table Vendors:" << sql_query.lastError().text();
     }
 
-
-
+    //建进货表
+    if(sql_query.exec(" CREATE TABLE Purchase ("
+                      " PurchaseID TEXT NOT NULL,"
+                      " CreatTime TEXT NOT NULL,"
+                      " Vendor TEXT,"
+                      " Pay TEXT NOT NULL,"
+                      " Explain TEXT,"
+                      " Total DOUBLE NOT NULL,"
+                      " TrueTotal DOUBLE NOT NULL,"
+                      " PRIMARY KEY(PurchaseID),"
+                      " FOREIGN KEY(Vendor) REFERENCES Vendors(VendorName));"
+                      ))
+    {
+        qDebug()<<"CREATE table Purchase ok";
+    }
+    else
+    {
+        // SQL 查询失败，输出错误信息
+        qDebug() << "Error creating table Purchase:" << sql_query.lastError().text();
+    }
+    //建进货明细表
+    if(sql_query.exec(" CREATE TABLE PurchaseGoods ("
+                      " PurchaseID TEXT NOT NULL,"
+                      " name TEXT NOT NULL,"
+                      " Count INT NOT NULL,"
+                      " Unit TEXT,"
+                      " SubTotal DOUBLE NOT NULL,"
+                      " purchasePrice DOUBLE NOT NULL,"
+                      " PRIMARY KEY (PurchaseID, name),"
+                      " FOREIGN KEY (PurchaseID) REFERENCES Purchase (PurchaseID),"
+                      " FOREIGN KEY (name) REFERENCES goods (name));"))
+    {
+        qDebug()<<"CREATE table PurchaseGoods ok";
+    }
+//建顾客表
+    if (sql_query.exec("CREATE TABLE Customers ("
+                        "CustomerID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        "CustomerName TEXT NOT NULL,"
+                        "PhoneNumber TEXT NOT NULL,"
+                        "Birthday TEXT,"
+                        "Discount REAL DEFAULT 1.0,"
+                        "Balance REAL DEFAULT 0.0,"
+                        "LoyaltyPoints INTEGER DEFAULT 0,"
+                        "RegistrationDate TEXT DEFAULT (DATETIME('now','localtime')),"
+                        "MemberStatus TEXT DEFAULT 'Inactive'"
+                        ")"))
+    {
+        qDebug() << "Table Customers created!";
+    }
+    else
+    {
+        qDebug() << "Error creating table Customers:" << sql_query.lastError().text();
+    }
+/*  CustomerID 是一个自增的整数型字段，作为每个顾客的唯一标识符。
+    CustomerName 和 PhoneNumber 是必填的字符串类型字段，分别用于存储顾客的姓名和手机号码。
+    Birthday 是一个可选的日期类型字段，用于记录顾客的生日。
+    Discount 是一个浮点数类型的字段，用于记录该顾客的折扣率。默认值为 1.0，即不打折。
+    Balance 是一个浮点数类型的字段，用于记录该顾客的储值余额。默认值为 0.0，即未储值。
+    LoyaltyPoints 是一个整数类型的字段，用于记录该顾客的会员积分。默认值为 0，即未获得任何积分。
+    RegistrationDate 是一个自动填充当前时间的日期类型字段，用于记录该顾客的注册时间。
+    MemberStatus 是一个字符串类型的字段，用于记录该顾客的会员状态。默认值为 'Inactive'，即非会员状态。可以根据实际需要设置其他状态值，例如 'Active'（激活状态）、'Suspended'（暂停状态）等。
+*/
+//建会员充值记录表
+    if (sql_query.exec("CREATE TABLE IF NOT EXISTS MemberRechargeRecord ("
+                       "MemberName TEXT NOT NULL,"
+                       "Cashier TEXT NOT NULL,"
+                       "RechargeAmount INTEGER NOT NULL,"
+                       "GiftAmount INTEGER,"
+                       "PaymentMethod TEXT NOT NULL,"
+                       "RechargeTime TEXT DEFAULT (DATETIME('now','localtime')),"
+                       "PRIMARY KEY (MemberName, RechargeTime));"))
+    {
+        qDebug() << "CREATE table MemberRechargeRecord OK";
+    }
+    else
+    {
+        qDebug() << "Error creating table MemberRechargeRecord:" << sql_query.lastError().text();
+    }
+    /*    MemberName：会员姓名，使用 TEXT 类型存储，不能为空。
+    Cashier：收银员，使用 TEXT 类型存储，不能为空。
+    RechargeAmount：充值金额，使用 INTEGER 类型存储，不能为空。
+    GiftAmount：赠送金额，使用 INTEGER 类型存储。
+    PaymentMethod：支付方式，使用 TEXT 类型存储，不能为空。
+    RechargeTime：充值时间，使用 TEXT 类型存储，自动填充。
+    PRIMARY KEY (MemberName, RechargeTime)：设置复合主键，以便唯一标识一条充值记录，其中 MemberName 和 RechargeTime 都不能为空。*/
 }
 
 shop_sql::~shop_sql()
@@ -245,6 +373,7 @@ QJsonArray shop_sql::end_of_searching(QString text)
          }
        return result;  // 返回 QJsonArray 对象
 }
+
 QJsonArray shop_sql::goods_list()
 {
     QJsonArray list;
@@ -280,18 +409,17 @@ QJsonArray shop_sql::goods_list_by_classification(QString Conditional, bool Pare
         {
             QJsonObject temp;
             temp["name"]=query.value(0).toString();
-            temp["bar_code"]=query.value(1).toInt();
+            temp["bar_code"]=query.value(1).toString();
             temp["classification"]=query.value(2).toString();
-            temp["selling_price"]=query.value(3).toDouble();
-            temp["member_price"]=query.value(4).toDouble();
-            temp["purchase_price"]=query.value(5).toDouble();
-            temp["inventory"]=query.value(6).toInt();
+            temp["selling_price"]=query.value(3).toString();
+            temp["member_price"]=query.value(4).toString();
+            temp["purchase_price"]=query.value(5).toString();
+            temp["inventory"]=query.value(6).toString();
             temp["unit"]=query.value(7).toString();
             goods.append(temp);
 
         }
     }
-
     if(ParentClassification==true)//继续查找Conditional下的子分类有没有对应的商品
     {
         if(query.exec("select SubClassification from Classification where ParentClassification ='"+Conditional+"'"))
@@ -303,21 +431,18 @@ QJsonArray shop_sql::goods_list_by_classification(QString Conditional, bool Pare
                 {
                     while (query2.next())
                     {
-
                         QJsonObject temp;
                         temp["name"]=query2.value(0).toString();
-                        temp["bar_code"]=query2.value(1).toInt();
+                        temp["bar_code"]=query2.value(1).toString();
                         temp["classification"]=query2.value(2).toString();
-                        temp["selling_price"]=query2.value(3).toDouble();
-                        temp["member_price"]=query2.value(4).toDouble();
-                        temp["purchase_price"]=query2.value(5).toDouble();
-                        temp["inventory"]=query2.value(6).toInt();
+                        temp["selling_price"]=query2.value(3).toString();
+                        temp["member_price"]=query2.value(4).toString();
+                        temp["purchase_price"]=query2.value(5).toString();
+                        temp["inventory"]=query2.value(6).toString();
                         temp["unit"]=query2.value(7).toString();
                         qDebug()<<"temp:"<<temp;
                         goods.append(temp);
-
                     }
-
                 }
             }
         }

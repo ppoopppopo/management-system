@@ -8,12 +8,12 @@ Register::Register(QWidget *parent) :
 
 
     ui->setupUi(this);
-this->setAttribute(Qt::WA_DeleteOnClose,true);
+    this->setAttribute(Qt::WA_DeleteOnClose,true);
     setWindowModality(Qt::ApplicationModal);
 
     //shop_sql shop;
     //connect(this,SIGNAL(close))
-   // shop.new_user_save("1v5875474400","xxlx ","314159");
+    // shop.new_user_save("1v5875474400","xxlx ","314159");
 }
 
 Register::~Register()
@@ -24,7 +24,7 @@ Register::~Register()
 
 void Register::on_btn_return_login__clicked()
 {
-  emit this_close();
+    emit this_close();
     this->close();
 
     //delete ui;
@@ -33,7 +33,7 @@ void Register::on_btn_return_login__clicked()
 }
 bool Register::registering(QString name, QString sex, QString age, QString password1, QString password2, QString user)
 {
-	//判断参数是否为空
+    //判断参数是否为空
     if (name.isEmpty()||sex.isEmpty()||age==0||password1.isEmpty()||password2.isEmpty()||user.isEmpty())
     {
         QMessageBox::critical(this, tr("错误"), tr("参数有空值"), QMessageBox::Ok);
@@ -41,18 +41,14 @@ bool Register::registering(QString name, QString sex, QString age, QString passw
     }
     if(password1==password2)
     {
-
         shop->new_user_save(name,sex,age,password1,user);
         return true;
-
     }
     else
     {
         QMessageBox::critical(this, tr("错误"), tr("两次密码不一致"), QMessageBox::Ok);
         return false;
     }
-	
-		
 }
 
 void Register::on_pushButton_clicked()
@@ -69,14 +65,7 @@ void Register::on_pushButton_clicked()
         QMessageBox::information(this,"消息","注册成功",QMessageBox::Ok);
         //用connect函数，当this->close()执行时，立即最大化login窗口
 
-		this->close();
-	}
-
-
-
-
-
-
-
+        this->close();
+    }
 }
-    
+

@@ -23,16 +23,8 @@ good::good(QWidget *parent) :
     ui->setupUi(this);
 
     comboxs_of_classification_init();
-    // 设置列数
-    ui->tableWidget->setColumnCount(8);
-    ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "商品名称" << "条码" << "分类" << "售价" << "会员价" << "进价" << "库存" << "单位");
-    // 自适应列表头和内容
-    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);//table自适应宽
-    ui->tableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //添加每行数据
-    original_goods=shop->goods_list();
-    tablewidget_update(original_goods);
-    ui->tableWidget->setAlternatingRowColors(true);//表格的行是否用交替底色显示
+    tablewidgetInit();
+
     //把ui->pushButton设置为不可点击
     ui->pushButton->setEnabled(false);
     //选中单元格槽函数
@@ -88,7 +80,17 @@ void good::comboxs_of_classification_init()
 
 void good::tablewidgetInit()
 {
+    // 设置列数
+    ui->tableWidget->setColumnCount(8);
+    ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "商品名称" << "条码" << "分类" << "售价" << "会员价" << "进价" << "库存" << "单位");
+    // 自适应列表头和内容
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);//table自适应宽
+    ui->tableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->tableWidget->setAlternatingRowColors(true);//表格的行是否用交替底色显示
 
+    //添加每行数据
+    original_goods=shop->goods_list();
+    tablewidget_update(original_goods);
 }
 
 void good::tablewidget_update(QJsonArray goods)

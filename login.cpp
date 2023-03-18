@@ -16,9 +16,9 @@ this->setAttribute(Qt::WA_DeleteOnClose,true);
 
 //this->setWindowFlags(Qt::FramelessWindowHint);//隐藏边框
 //this->showMaximized();
-    mainwindow *main=new mainwindow;
-    this->close();
-    main->show();
+//    mainwindow *main=new mainwindow;
+//    this->close();
+//    main->show();
 
 }
 login::~login()
