@@ -29,6 +29,7 @@ public:
     bool user_edit=false;
     bool deleting_goods=false;
     bool newData(QString,int);//给新数据设立条件
+
     ~good();
 public slots:
     void on_parentClassificationClicked(QString);//点击父分类槽函数
@@ -38,6 +39,7 @@ public slots:
 private slots:
     void on_pushButton_clicked();
     void onTableWidgetCellDoubleClicked(int row, int column);
+    void QLayoutItem_Clear();//清空分类布局里的 元素
 private:
     //QMap<QString, QString>goodName_temporary;//商品名临时储存，key为商品名最初名，value为最近商品更改名
     QString data_doubleClick_LastTime;//上一次双击的商品名

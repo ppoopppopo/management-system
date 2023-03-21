@@ -42,7 +42,7 @@ private slots:
 
 
 
-    void login_again();
+
 
     void on_btn_register_clicked();
 

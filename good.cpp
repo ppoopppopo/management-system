@@ -4,6 +4,8 @@
 
 void good::closeEvent(QCloseEvent *event)
 {
+
+
    // 显示一个询问对话框，询问用户是否确定关闭窗口
        QMessageBox::StandardButton reply = QMessageBox::question(this, tr("确认"), tr("是否保存已修改的信息?"), QMessageBox::Yes|QMessageBox::No);
        if (reply == QMessageBox::Yes) {
@@ -20,7 +22,7 @@ good::good(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::good)
 {
-    ui->setupUi(this);
+    ui->setupUi(this);this->setAttribute(Qt::WA_DeleteOnClose,true);
 
     comboxs_of_classification_init();
     tablewidgetInit();
@@ -58,6 +60,9 @@ void good::comboxs_of_classification_init()
     classification *vlayout=new classification(ui->VLayoutClassification,2);
     vlayout->classificationUI_init();//初始化编辑分类界面
     connect(vlayout, &classification::Good_parentClassificationClicked, this, &good::on_parentClassificationClicked);
+    connect(vlayout,&classification::close,this, &good::QLayoutItem_Clear);
+
+
 }
 
 //void good::goodName_temporary_init()
@@ -181,7 +186,23 @@ bool good::newData(QString new_data, int type)
 //                    }
 //                }
 //    }
-//    return true;
+    //    return true;
+}
+
+void good::QLayoutItem_Clear()
+{
+    QLayoutItem *child;
+     while ((child = ui->VLayoutClassification->takeAt(0)) != 0)
+     {
+            //setParent为NULL，防止删除之后界面不消失
+            if(child->widget())
+            {
+                child->widget()->setParent(NULL);
+            }
+
+            delete child;
+     }
+     comboxs_of_classification_init();
 }
 
 good::~good()

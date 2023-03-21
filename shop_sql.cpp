@@ -68,7 +68,7 @@ shop_sql::shop_sql()
 //    }
 
     //建分类表
-    if(sql_query.exec("CREATE TABLE Classification ("
+    if(sql_query.exec("CREATE TABLE IF NOT EXISTS Classification ("
                       "ParentClassification TEXT NOT NULL,"
                       "Subclassification    TEXT,"
                       "PRIMARY KEY ("
@@ -95,7 +95,7 @@ shop_sql::shop_sql()
     }
 
     //建进货表
-    if(sql_query.exec(" CREATE TABLE Purchase ("
+    if(sql_query.exec(" CREATE TABLE IF NOT EXISTS Purchase ("
                       " PurchaseID TEXT NOT NULL,"
                       " CreatTime TEXT NOT NULL,"
                       " Vendor TEXT,"
@@ -115,7 +115,7 @@ shop_sql::shop_sql()
         qDebug() << "Error creating table Purchase:" << sql_query.lastError().text();
     }
     //建进货明细表
-    if(sql_query.exec(" CREATE TABLE PurchaseGoods ("
+    if(sql_query.exec(" CREATE TABLE IF NOT EXISTS PurchaseGoods ("
                       " PurchaseID TEXT NOT NULL,"
                       " name TEXT NOT NULL,"
                       " Count INT NOT NULL,"
@@ -129,7 +129,7 @@ shop_sql::shop_sql()
         qDebug()<<"CREATE table PurchaseGoods ok";
     }
 //建顾客表
-    if (sql_query.exec("CREATE TABLE Customers ("
+    if (sql_query.exec("CREATE TABLE IF NOT EXISTS Customers ("
                         "CustomerID INTEGER PRIMARY KEY AUTOINCREMENT,"
                         "CustomerName TEXT NOT NULL,"
                         "PhoneNumber TEXT NOT NULL,"
@@ -194,7 +194,7 @@ void shop_sql::new_user_save(QString name, QString sex, QString age,QString pass
 {
 	QSqlQuery sql_query;
 	QString creat_time = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-    QString commond = "INSERT INTO accounts VALUES(";
+    QString commond = "INSERT INTO Accounts VALUES(";
     commond.append("'"+name+"',");
     commond.append("'"+sex+"',");
     commond.append("'"+age+"',");
@@ -209,7 +209,27 @@ void shop_sql::new_user_save(QString name, QString sex, QString age,QString pass
 	else
 	{
 		qDebug() << "INSERT accounts error";
-	}
+    }
+}
+
+void shop_sql::addParentClassification(QString ParentClassification)
+{
+    QSqlQuery query;
+    qDebug()<<"sql语句"<<query.exec(QString("INSERT INTO Classification(ParentClassification) VALUES('%1')").arg(ParentClassification));
+
+}
+
+void shop_sql::addSubClassification(QString ParentClassRecently, QString newSubClass)
+{
+    qDebug()<<"sql类 void addSubClassification拿到的数据:"<<ParentClassRecently<<newSubClass;
+    QSqlQuery query;
+    int choose=father_classification_onlyone(ParentClassRecently);
+    if(choose==1)//如果父分类在表中只有一个，说明还没有过子分类
+    {
+        qDebug()<<"父分类唯一且没有子分类";
+       qDebug() <<"sql语句"<<query.exec(QString("update Classification set Subclassification='%1' where ParentClassification='%2'").arg(newSubClass,ParentClassRecently));
+
+    }
 }
 //查询某表中某字段中是否存在该内容，参数一表名，参数二为字段，参数三字段内容
 bool shop_sql::is_exist(QString table, QString field, QString content)
@@ -244,8 +264,8 @@ int shop_sql::login_checks(QString password, QString user)
 {
     QSqlQuery query(database);
 
-     qDebug()<<query.exec("select * from accounts where user='" + user + "'"
-        " and password='" +password + "'");
+     qDebug()<<query.exec("select * from Accounts where Username='" + user + "'"
+        " and Password='" +password + "'");
 
      if (query.next())
      {
@@ -254,7 +274,7 @@ int shop_sql::login_checks(QString password, QString user)
      else
      {
          //查看用户名是否存在
-         query.exec("select * from accounts where user='"+ user +"'" );
+         query.exec("select * from Accounts where Username='"+ user +"'" );
              if (query.next())
              {
 
@@ -284,7 +304,7 @@ int shop_sql::father_classification_count()
 int shop_sql::SubClassifiactionsCount(QString ParentClassification)
 {
     QSqlQuery query(database);
-    if(query.exec("select count(SubClassification) from Classification where ParentClassification='"+ParentClassification+"'"))
+    if(query.exec("select count(ParentClassification) from Classification where ParentClassification='"+ParentClassification+"'"))
     {
         if(query.next())
         {
@@ -327,10 +347,11 @@ QStringList shop_sql::goods_of_ParentClassification(QString ParentClassification
    // return;
 }
 
-bool shop_sql::father_classification_onlyone(QString father_classification)
+int shop_sql::father_classification_onlyone(QString father_classification)
 {
     qDebug()<<father_classification;
     QSqlQuery query(database);
+    QSqlQuery query2(database);
     if(query.exec("SELECT count (ParentClassification) from Classification where ParentClassification='"+father_classification+"'"))
     {
 
@@ -338,11 +359,24 @@ bool shop_sql::father_classification_onlyone(QString father_classification)
         {
             if(query.value(0).toInt()==1)
             {
-                qDebug()<<"true";
-                return true;
+                query2.exec("SELECT Subclassification from Classification where ParentClassification='"+father_classification+"'");
+                query2.next();
+                QString str=query2.value(0).toString();
+                qDebug()<<"只有一个父分类时子分类的名字"<<str<<str.size();
+                if(str=="")
+                {
+                    qDebug()<<"true";
+                    return 1;
+                }
+                else
+                {
+                    qDebug()<<"表中只有一个父分类，但是对应的子分类为空";
+                    return -1;
+                }
+
             }
-            qDebug()<<"false";
-            return false;
+            qDebug()<<"父分类不止一个";
+            return 0;
         }
 
     }
@@ -597,6 +631,69 @@ bool shop_sql::newData_classification(QString classification)
         return true;
     }
     return false;
+}
+
+bool shop_sql::Exist_ParentClassification(QString newParentClassification)
+{
+    QSqlQuery query(database);
+     qDebug()<<"sql语句"<<query.exec(QString("select ParentClassification from Classification where ParentClassification='%1'").arg(newParentClassification));
+     if(query.next())
+     {
+         qDebug()<<"找到父分类"<<query.value(0);
+         return false;
+     }
+
+     return true;
+}
+
+bool shop_sql::Exist_SubClassification(QString newSubClassification)
+{
+    QSqlQuery query(database);
+     qDebug()<<"sql语句"<<query.exec(QString("select SubClassification from Classification where Subclassification='%1'").arg(newSubClassification));
+     if(query.next())
+     {
+         qDebug()<<"找到子分类"<<query.value(0);
+         return false;
+     }
+
+     return true;
+}
+
+bool shop_sql::delete_ParentClassification(QString ParentClassification)
+{
+    QSqlQuery query(database);
+     qDebug()<<"sql语句"<<query.exec(QString("DELETE FROM Classification WHERE ParentClassification ='%1'").arg(ParentClassification));
+     int num = query.numRowsAffected();
+     return num>0 ? true:false;
+}
+
+bool shop_sql::delete_SubClassification(QString SubClassification)
+{
+    QSqlQuery query(database);
+    qDebug()<<"sql语句准备"<<query.prepare(QString("DELETE FROM Classification WHERE Subclassification ='%1'").arg(SubClassification));
+    QString Parent=find_ParentClass_by_SubClass(SubClassification);
+    qDebug()<<"通过子分类"<<SubClassification<<"查询父分类"<<Parent;
+    if(father_classification_onlyone(Parent)==-1)
+    {
+        qDebug()<<"sql语句"<<query.exec();
+        addParentClassification(Parent);
+    }
+    else
+    {
+        qDebug()<<"sql语句"<<query.exec();
+    }
+    int num = query.numRowsAffected();
+    return num>0 ? true:false;
+}
+
+QString shop_sql::find_ParentClass_by_SubClass(QString SubClass)
+{
+    QSqlQuery query(database);
+     qDebug()<<"sql语句"<<query.exec(QString("select ParentClassification from Classification where Subclassification='%1'").arg(SubClass));
+     if(query.next())
+     {
+         return query.value(0).toString();
+     }
 }
 
 //bool shop_sql::newData_sellingprice(QString)

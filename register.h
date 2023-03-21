@@ -22,7 +22,7 @@ public:
     bool registering(QString name, QString sex, QString age,QString password1,QString password2,QString user);
     ~Register();
 signals:
-    void this_close();
+
 
 private slots:
     void on_btn_return_login__clicked();

@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_XDialog_t {
-    QByteArrayData data[4];
-    char stringdata0[23];
+    QByteArrayData data[7];
+    char stringdata0[101];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,12 +33,17 @@ struct qt_meta_stringdata_XDialog_t {
 static const qt_meta_stringdata_XDialog_t qt_meta_stringdata_XDialog = {
     {
 QT_MOC_LITERAL(0, 0, 7), // "XDialog"
-QT_MOC_LITERAL(1, 8, 6), // "accept"
-QT_MOC_LITERAL(2, 15, 0), // ""
-QT_MOC_LITERAL(3, 16, 6) // "reject"
+QT_MOC_LITERAL(1, 8, 29), // "update_ParentPlassificationUI"
+QT_MOC_LITERAL(2, 38, 0), // ""
+QT_MOC_LITERAL(3, 39, 6), // "accept"
+QT_MOC_LITERAL(4, 46, 6), // "reject"
+QT_MOC_LITERAL(5, 53, 27), // "receive_ParentClassRecently"
+QT_MOC_LITERAL(6, 81, 19) // "ParentClassRecently"
 
     },
-    "XDialog\0accept\0\0reject"
+    "XDialog\0update_ParentPlassificationUI\0"
+    "\0accept\0reject\0receive_ParentClassRecently\0"
+    "ParentClassRecently"
 };
 #undef QT_MOC_LITERAL
 
@@ -48,20 +53,28 @@ static const uint qt_meta_data_XDialog[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       1,       // signalCount
+
+ // signals: name, argc, parameters, tag, flags
+       1,    0,   34,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   24,    2, 0x0a /* Public */,
-       3,    0,   25,    2, 0x0a /* Public */,
+       3,    0,   35,    2, 0x0a /* Public */,
+       4,    0,   36,    2, 0x0a /* Public */,
+       5,    1,   37,    2, 0x0a /* Public */,
+
+ // signals: parameters
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,    6,
 
        0        // eod
 };
@@ -72,12 +85,22 @@ void XDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         auto *_t = static_cast<XDialog *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->accept(); break;
-        case 1: _t->reject(); break;
+        case 0: _t->update_ParentPlassificationUI(); break;
+        case 1: _t->accept(); break;
+        case 2: _t->reject(); break;
+        case 3: _t->receive_ParentClassRecently((*reinterpret_cast< QString(*)>(_a[1]))); break;
         default: ;
         }
+    } else if (_c == QMetaObject::IndexOfMethod) {
+        int *result = reinterpret_cast<int *>(_a[0]);
+        {
+            using _t = void (XDialog::*)();
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&XDialog::update_ParentPlassificationUI)) {
+                *result = 0;
+                return;
+            }
+        }
     }
-    Q_UNUSED(_a);
 }
 
 QT_INIT_METAOBJECT const QMetaObject XDialog::staticMetaObject = { {
@@ -109,15 +132,21 @@ int XDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 4)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 2;
+        _id -= 4;
     }
     return _id;
+}
+
+// SIGNAL 0
+void XDialog::update_ParentPlassificationUI()
+{
+    QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

@@ -85,8 +85,8 @@ public:
     QLabel *label_7;
     QSpacerItem *horizontalSpacer_14;
     QHBoxLayout *horizontalLayout_24;
-    QListWidget *listWidget_2;
     QListWidget *listWidget_3;
+    QListWidget *listWidget_2;
 
     void setupUi(QWidget *mainwindow)
     {
@@ -287,11 +287,20 @@ public:
 
         label = new QLabel(frame_mainwindow_right);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setMaximumSize(QSize(16777215, 20));
+        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Maximum);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
+        label->setSizePolicy(sizePolicy3);
+        label->setMaximumSize(QSize(16777215, 50));
         QFont font4;
-        font4.setFamily(QString::fromUtf8("Agency FB"));
-        font4.setPointSize(14);
+        font4.setFamily(QString::fromUtf8("Bahnschrift SemiLight"));
+        font4.setPointSize(20);
+        font4.setBold(false);
+        font4.setItalic(false);
+        font4.setWeight(50);
         label->setFont(font4);
+        label->setStyleSheet(QString::fromUtf8("font: 20pt \"Bahnschrift SemiLight\";"));
 
         horizontalLayout_6->addWidget(label);
 
@@ -311,11 +320,12 @@ public:
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
         label_2 = new QLabel(frame_mainwindow_right);
         label_2->setObjectName(QString::fromUtf8("label_2"));
-        QSizePolicy sizePolicy3(QSizePolicy::Minimum, QSizePolicy::Preferred);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
-        label_2->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy4(QSizePolicy::Minimum, QSizePolicy::Preferred);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
+        label_2->setSizePolicy(sizePolicy4);
+        label_2->setStyleSheet(QString::fromUtf8("font: 12pt \"\351\273\221\344\275\223\";"));
 
         horizontalLayout_2->addWidget(label_2);
 
@@ -331,8 +341,10 @@ public:
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         label_3 = new QLabel(frame_mainwindow_right);
         label_3->setObjectName(QString::fromUtf8("label_3"));
-        sizePolicy3.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
-        label_3->setSizePolicy(sizePolicy3);
+        sizePolicy4.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
+        label_3->setSizePolicy(sizePolicy4);
+        label_3->setStyleSheet(QString::fromUtf8("font: 36pt \"Bahnschrift SemiLight\";\n"
+"color: rgb(255, 170, 0);"));
 
         horizontalLayout_7->addWidget(label_3);
 
@@ -347,8 +359,12 @@ public:
         horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
         label_4 = new QLabel(frame_mainwindow_right);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        sizePolicy3.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
-        label_4->setSizePolicy(sizePolicy3);
+        sizePolicy4.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
+        label_4->setSizePolicy(sizePolicy4);
+        QFont font5;
+        font5.setFamily(QString::fromUtf8("\351\273\221\344\275\223"));
+        font5.setPointSize(12);
+        label_4->setFont(font5);
 
         horizontalLayout_8->addWidget(label_4);
 
@@ -368,12 +384,9 @@ public:
         horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
         label_5 = new QLabel(frame_mainwindow_right);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        QSizePolicy sizePolicy4(QSizePolicy::Fixed, QSizePolicy::Preferred);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
         sizePolicy4.setHeightForWidth(label_5->sizePolicy().hasHeightForWidth());
         label_5->setSizePolicy(sizePolicy4);
-        label_5->setMaximumSize(QSize(60, 16777215));
+        label_5->setFont(font5);
 
         horizontalLayout_9->addWidget(label_5);
 
@@ -388,7 +401,11 @@ public:
         sizePolicy1.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
         pushButton_5->setSizePolicy(sizePolicy1);
         pushButton_5->setMaximumSize(QSize(40, 30));
-        pushButton_5->setStyleSheet(QString::fromUtf8("color: #fdfdfd"));
+        QFont font6;
+        font6.setFamily(QString::fromUtf8("\345\256\213\344\275\223"));
+        font6.setPointSize(9);
+        pushButton_5->setFont(font6);
+        pushButton_5->setStyleSheet(QString::fromUtf8(""));
 
         horizontalLayout_19->addWidget(pushButton_5);
 
@@ -397,7 +414,10 @@ public:
         sizePolicy1.setHeightForWidth(pushButton_6->sizePolicy().hasHeightForWidth());
         pushButton_6->setSizePolicy(sizePolicy1);
         pushButton_6->setMaximumSize(QSize(40, 30));
-        pushButton_6->setStyleSheet(QString::fromUtf8("color: #fdfdfd"));
+        QFont font7;
+        font7.setFamily(QString::fromUtf8("\345\256\213\344\275\223"));
+        pushButton_6->setFont(font7);
+        pushButton_6->setStyleSheet(QString::fromUtf8(""));
 
         horizontalLayout_19->addWidget(pushButton_6);
 
@@ -406,8 +426,8 @@ public:
         sizePolicy1.setHeightForWidth(pushButton_7->sizePolicy().hasHeightForWidth());
         pushButton_7->setSizePolicy(sizePolicy1);
         pushButton_7->setMaximumSize(QSize(40, 30));
-        pushButton_7->setStyleSheet(QString::fromUtf8("\n"
-"color: rgb(253, 253, 253);"));
+        pushButton_7->setFont(font7);
+        pushButton_7->setStyleSheet(QString::fromUtf8(""));
 
         horizontalLayout_19->addWidget(pushButton_7);
 
@@ -425,6 +445,8 @@ public:
         label_6->setObjectName(QString::fromUtf8("label_6"));
         sizePolicy1.setHeightForWidth(label_6->sizePolicy().hasHeightForWidth());
         label_6->setSizePolicy(sizePolicy1);
+        label_6->setStyleSheet(QString::fromUtf8("font: 36pt \"Bahnschrift SemiLight\";\n"
+"color: rgb(255, 170, 0);"));
 
         horizontalLayout_10->addWidget(label_6);
 
@@ -439,6 +461,7 @@ public:
         horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
         label_7 = new QLabel(frame_mainwindow_right);
         label_7->setObjectName(QString::fromUtf8("label_7"));
+        label_7->setFont(font5);
 
         horizontalLayout_11->addWidget(label_7);
 
@@ -459,6 +482,13 @@ public:
 
         horizontalLayout_24 = new QHBoxLayout();
         horizontalLayout_24->setObjectName(QString::fromUtf8("horizontalLayout_24"));
+        listWidget_3 = new QListWidget(frame_mainwindow_right);
+        listWidget_3->setObjectName(QString::fromUtf8("listWidget_3"));
+        sizePolicy2.setHeightForWidth(listWidget_3->sizePolicy().hasHeightForWidth());
+        listWidget_3->setSizePolicy(sizePolicy2);
+
+        horizontalLayout_24->addWidget(listWidget_3);
+
         listWidget_2 = new QListWidget(frame_mainwindow_right);
         listWidget_2->setObjectName(QString::fromUtf8("listWidget_2"));
         listWidget_2->setEnabled(true);
@@ -468,13 +498,6 @@ public:
         listWidget_2->setMovement(QListView::Static);
 
         horizontalLayout_24->addWidget(listWidget_2);
-
-        listWidget_3 = new QListWidget(frame_mainwindow_right);
-        listWidget_3->setObjectName(QString::fromUtf8("listWidget_3"));
-        sizePolicy2.setHeightForWidth(listWidget_3->sizePolicy().hasHeightForWidth());
-        listWidget_3->setSizePolicy(sizePolicy2);
-
-        horizontalLayout_24->addWidget(listWidget_3);
 
 
         verticalLayout_3->addLayout(horizontalLayout_24);
@@ -504,13 +527,13 @@ public:
         pushButton_4->setText(QCoreApplication::translate("mainwindow", "\344\274\232\345\221\230", nullptr));
         label->setText(QCoreApplication::translate("mainwindow", "TextLabel", nullptr));
         label_2->setText(QCoreApplication::translate("mainwindow", "\351\224\200\345\224\256\351\242\235", nullptr));
-        label_3->setText(QCoreApplication::translate("mainwindow", "TextLabel", nullptr));
+        label_3->setText(QCoreApplication::translate("mainwindow", "00.00", nullptr));
         label_4->setText(QCoreApplication::translate("mainwindow", "\351\224\200\345\224\256\346\225\260\346\215\256\346\216\222\350\241\214", nullptr));
         label_5->setText(QCoreApplication::translate("mainwindow", "\351\242\204\344\274\260\345\210\251\346\266\246", nullptr));
         pushButton_5->setText(QCoreApplication::translate("mainwindow", "\344\273\212\346\227\245", nullptr));
         pushButton_6->setText(QCoreApplication::translate("mainwindow", "\346\234\254\346\234\210", nullptr));
         pushButton_7->setText(QCoreApplication::translate("mainwindow", "\344\273\212\345\271\264", nullptr));
-        label_6->setText(QCoreApplication::translate("mainwindow", "TextLabel", nullptr));
+        label_6->setText(QCoreApplication::translate("mainwindow", "00.00", nullptr));
         label_7->setText(QCoreApplication::translate("mainwindow", "\351\224\200\345\224\256\351\207\221\351\242\235\346\216\222\350\241\214", nullptr));
     } // retranslateUi
 

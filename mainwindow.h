@@ -4,6 +4,7 @@
 #include <QWidget>
 #include"good.h"
 #include"purchase.h"
+#include<QTimer>
 namespace Ui {
 class mainwindow;
 }
@@ -18,7 +19,7 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-
+    void updateTime();
     void on_pushButton_2_clicked();
 
 private:

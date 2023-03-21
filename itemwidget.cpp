@@ -27,6 +27,11 @@ ItemWidget::ItemWidget(const QString &text, QListWidget *parent ):QWidget(parent
             connect(m_deleteButton, &QPushButton::clicked, this, &ItemWidget::onDeleteButtonClicked);
 }
 
+ItemWidget::~ItemWidget()
+{
+    qDebug()<<"释放ItemWidget："<<m_text;
+}
+
 //void ItemWidget::Button_display()
 //{
 //    m_deleteButton->setVisible(true);
@@ -39,15 +44,50 @@ QString ItemWidget::text() const
 void ItemWidget::onEditButtonClicked()
 {
     //QMessageBox::information(this, "Edit", m_text);
-    XDialog *edit=new XDialog("edit");
+    XDialog *edit=new XDialog("编辑分类");
     edit->show();
 
 }
 void ItemWidget::onDeleteButtonClicked()
 
 {
-    QMessageBox::information(this, "Delete", m_text);
+    QMessageBox::StandardButton reply = QMessageBox::question(this, tr("确认"), tr("是否删除?"), QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes)
+    {
+        // 如果用户确定
+        if(delete_ParentClass)//删除父分类
+        {
+            qDebug()<<"即将删除父分类";
+            if(shop->delete_ParentClassification(m_text))
+            {
+                qDebug()<<"删除父分类"<<m_text<<"成功";
+                emit update_ParentClassificationUI();
+            }
+            else
+            {
+                qDebug()<<"删除父分类"<<m_text<<"失败";
+            }
+        }
+        else//删除子分类
+        {
+            qDebug()<<"即将删除子分类";
+            shop->delete_SubClassification(m_text);
+            emit update_SubClassificationUI();
+
+        }
+
+
+
+
+
+    } else
+    {
+        // 如果用户取消
+
+    }
 }
+
+
  QPushButton* ItemWidget::m_editButton_return()
  {
      return m_editButton;

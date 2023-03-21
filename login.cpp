@@ -26,21 +26,15 @@ login::~login()
     qDebug()<<"delete login_ui";
 
 }
-void login::login_again()
-{
-    //this->showMaximized();
-   // QDesktopWidget *desktop = QApplication::desktop();
-   // move((desktop->width()-this->width())/2,(desktop->height()-this->height())/2);
 
-
-}
 
 void login::on_btn_register_clicked()
 {
     Register *reg=new Register;
 
     reg->show();
-    connect(reg,SIGNAL(this_close()),this,SLOT(login_again()));
+    this->close();
+
 
 
 }
@@ -82,6 +76,9 @@ void login::on_btn_minshow_clicked()
 
 void login::on_btn_forget_clicked()
 {
+    mainwindow *main=new mainwindow;
+    this->close();
+    main->show();
 
 }
 

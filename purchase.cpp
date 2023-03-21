@@ -5,6 +5,7 @@ Purchase::Purchase(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Purchase)
 {
+    this->setAttribute(Qt::WA_DeleteOnClose,true);
     ui->setupUi(this);
 
     comboxs_of_classification_init();

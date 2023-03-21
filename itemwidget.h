@@ -5,12 +5,17 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include<QLabel>
+#include"qdebug.h"
+#include<QInputDialog>
 class ItemWidget : public QWidget
 {
     Q_OBJECT
 
 public:
+
+    bool delete_ParentClass;
     explicit ItemWidget(const QString &text, QListWidget *parent = nullptr);
+    ~ItemWidget();
     //QPushButton
     QString text() const;
     QPushButton* m_editButton_return();
@@ -19,7 +24,8 @@ public:
 signals:
     void editButtonClicked();
     void deleteButtonClicked();
-
+    void update_ParentClassificationUI();
+    void update_SubClassificationUI();
 private slots:
     void onEditButtonClicked();
 

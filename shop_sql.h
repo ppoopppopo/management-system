@@ -24,6 +24,8 @@ public:
 
    // explicit shop_sql(QString name);
     void new_user_save(QString name, QString sex, QString age,QString password,QString user) ;
+    void addParentClassification(QString);
+    void addSubClassification(QString,QString);
     bool is_exist(QString table, QString field, QString content);
     bool opendb(QString name);
     int login_checks(QString password,QString user);//检查登录账户和密码是否正确
@@ -33,7 +35,7 @@ public:
     QStringList father_classification_list();//父分类表
     QStringList child_classification_list(QString father_classification);//子分类表
     QStringList goods_of_ParentClassification(QString ParentClassification);
-    bool father_classification_onlyone(QString father_classification);//判断父分类是否有子分类，有就返回false
+    int father_classification_onlyone(QString father_classification);//判断父分类是否有子分类，有就返回false
     QJsonArray goods_list();
     QJsonArray goods_list_by_classification(QString Conditional,bool ParentClassification);//通过分类名获取商品
     QJsonArray end_of_searching(QString text);//根据text找商品
@@ -46,6 +48,12 @@ public:
     bool newData_barcode(QString);
     bool newData_classification(QString);
     //bool newData_sellingprice(QString);
+    bool Exist_ParentClassification(QString);
+    bool Exist_SubClassification(QString);
+    bool delete_ParentClassification(QString);
+    bool delete_SubClassification(QString);
+    QString find_ParentClass_by_SubClass(QString);
+
 
 
 signals:

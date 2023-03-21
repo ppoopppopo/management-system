@@ -24,9 +24,12 @@ Register::~Register()
 
 void Register::on_btn_return_login__clicked()
 {
-    emit this_close();
-    this->close();
+    login *log=new login;
 
+    log->show();
+
+    //this->close();
+delete this;
     //delete ui;
 
 
