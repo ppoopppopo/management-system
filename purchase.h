@@ -25,11 +25,12 @@ public:
     QString Pay;
     void combox_of_vendors_init();//供应商下拉列表初始化
     void comboxs_of_classification_init();//分类列表初始化
-
+    void GoodsInformationRight_Init();//进货右界面初始化
+void QLayoutItem_Clear();//
 
 void on_ParentClassification_clicked(QPushButton* button);//点击父分类后事件
 void on_SubClassification_clicked(QString ParentClassification);//点击子分类后事件
-void GoodsInformationRight_Update(QJsonArray goods);//进货左界面更新商品信息
+void GoodsInformationRight_Update(QJsonArray goods);//进货右界面更新商品信息
 //void Connect_Init();//信号槽部署
 public slots:
 //void on_VLayoutClassification_Button_Click();//点击VLayoutClassification布局里的按钮后事件

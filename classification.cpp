@@ -80,7 +80,11 @@ void classification::on_ParentClassification_clicked(QPushButton *button)
         }
         ParentClassification[i]=str[i];
     }
-    //根据成员变量choose来做出相应的真正点击事件
+    if(ParentClassification=="其他分类")
+    {
+        ParentClassification="";
+    }
+    //根据成员变量choose来发送分类字符串给需要的接收者
     switch (choose)
     {
         case 1:
@@ -127,6 +131,7 @@ void classification::on_ParentClassification_clicked(QPushButton *button)
             delete widget;
         }
     }
+
     qDebug()<<ParentClassification<<"拥有的子分类"<<SubClassifications;
 }
 
@@ -137,7 +142,7 @@ void classification::on_SubClassification_clicked(QString SubClassification_Name
         case 1:
         emit Purchase_subClassificationClicked(SubClassification_Name);
         case 2:
-        //emit Good_parentClassificationClicked(ParentClassification);
+        emit Good_subClassificationClicked(SubClassification_Name);
         break;
 
     }
@@ -277,7 +282,7 @@ void classification::on_Button_add_father_clicked()
 {
     XDialog *edit=new XDialog("新增父分类");
     edit->show();
-connect(edit,&XDialog::update_ParentPlassificationUI,this,&classification::ListWidget_ParentClassification_Update);//添加父分类后更新父分类表
+connect(edit,&XDialog::update_ParentClassificationUI,this,&classification::ListWidget_ParentClassification_Update);//添加父分类后更新父分类表
 
 
 }
@@ -288,6 +293,11 @@ void classification::on_Button_add_child_clicked()
     AddChlidDialog->show();
     connect(this,&classification::send_ParentClassRecently,AddChlidDialog,&XDialog::receive_ParentClassRecently);//将子分类的父分类送到AddChlidDialog
     emit send_ParentClassRecently(ParentClassRecently);
+    connect(AddChlidDialog,&XDialog::update_SubClassificationUI,this,[=]()
+    {
+        ListWidget_SubClassification_Update(ParentClassRecently,ui-> listWidget_child);
+    }
+    );//添加子分类后更新子分类表
 
 }
 

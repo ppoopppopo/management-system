@@ -7,15 +7,15 @@ void good::closeEvent(QCloseEvent *event)
 
 
    // 显示一个询问对话框，询问用户是否确定关闭窗口
-       QMessageBox::StandardButton reply = QMessageBox::question(this, tr("确认"), tr("是否保存已修改的信息?"), QMessageBox::Yes|QMessageBox::No);
-       if (reply == QMessageBox::Yes) {
-           // 如果用户确定关闭窗口，并真正修改商品信息
-           //商品修改
-           event->accept();
-       } else {
-           // 如果用户取消，则不修改并关闭窗口
-           event->ignore();
-       }
+//    QMessageBox::StandardButton reply = QMessageBox::question(this, tr("确认"), tr("是否保存已修改的信息?"), QMessageBox::Yes|QMessageBox::No);
+//    if (reply == QMessageBox::Yes) {
+//        // 如果用户确定关闭窗口，并真正修改商品信息
+//        //商品修改
+//        event->accept();
+//    } else {
+//        // 如果用户取消，则不修改并关闭窗口
+//        event->ignore();
+//    }
 }
 
 good::good(QWidget *parent) :
@@ -43,16 +43,26 @@ good::good(QWidget *parent) :
 //双击信号槽
         connect(ui->tableWidget, SIGNAL(cellDoubleClicked(int, int)),
                     this, SLOT(onTableWidgetCellDoubleClicked(int, int)));
+        ui->lineEdit->setPlaceholderText("商品名/条形码");
+        ui->inventory->setEnabled(false);//设置库存上下限按钮不可点击
 }
 void good::onTableWidgetCellDoubleClicked(int row, int column)
 {
-    if (column == 0) { // 如果双击的是第一列
-           QMessageBox::warning(this, tr("提示"), tr("不能修改商品名！"));
-       } else { // 处理其他列的单元格双击事件
-           QTableWidgetItem *item = ui->tableWidget->item(row, column);
-           data_doubleClick_LastTime = item->text();
-           // ...
-       }
+    if (column == 0)
+    { // 如果双击的是第一列
+        QMessageBox::warning(this, tr("提示"), tr("不能修改商品名！"));
+    }
+    else
+        if(column==6)
+    {
+
+    }
+    else
+    { // 处理其他列的单元格双击事件
+        QTableWidgetItem *item = ui->tableWidget->item(row, column);
+        data_doubleClick_LastTime = item->text();
+        // ...
+    }
 }
 
 void good::comboxs_of_classification_init()
@@ -60,6 +70,7 @@ void good::comboxs_of_classification_init()
     classification *vlayout=new classification(ui->VLayoutClassification,2);
     vlayout->classificationUI_init();//初始化编辑分类界面
     connect(vlayout, &classification::Good_parentClassificationClicked, this, &good::on_parentClassificationClicked);
+    connect(vlayout,&classification::Good_subClassificationClicked,this,&good::on_subClassificationClicked);
     connect(vlayout,&classification::close,this, &good::QLayoutItem_Clear);
 
 
@@ -85,14 +96,12 @@ void good::comboxs_of_classification_init()
 
 void good::tablewidgetInit()
 {
-    // 设置列数
-    ui->tableWidget->setColumnCount(8);
-    ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "商品名称" << "条码" << "分类" << "售价" << "会员价" << "进价" << "库存" << "单位");
+
+    TableWidgetHeadInit();
     // 自适应列表头和内容
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);//table自适应宽
     ui->tableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->tableWidget->setAlternatingRowColors(true);//表格的行是否用交替底色显示
-
     //添加每行数据
     original_goods=shop->goods_list();
     tablewidget_update(original_goods);
@@ -100,6 +109,7 @@ void good::tablewidgetInit()
 
 void good::tablewidget_update(QJsonArray goods)
 {
+    TableWidgetHeadInit();
     user_edit=false;
     for (int i=0;i<goods.size();i++) {
         //向下添加一行
@@ -124,11 +134,20 @@ void good::tablewidget_update(QJsonArray goods)
     user_edit=true;
 }
 
-
-
-bool good::newData(QString new_data, int type)
+void good::TableWidgetHeadInit()
 {
+    ui->tableWidget->clear();
+    // 设置列数
+    ui->tableWidget->setColumnCount(8);
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "商品名称" << "条码" << "分类" << "售价" << "会员价" << "进价" << "库存" << "单位");
+}
 
+
+
+bool good::newData(QString name,QString new_data, int type)
+{
+    qDebug()<<"修改商品"<<name<<",新数据"<<new_data;
     switch (type) {
 //    case 1://商品名，检测新商品名是否与其他商品名同名
 //    {
@@ -141,34 +160,51 @@ bool good::newData(QString new_data, int type)
 //        break;
     case 2://条码，检测是否相同条码
     {
-        if(!shop->newData_barcode(new_data))
+        if(!shop->newData_barcode(name,new_data))
         {
             return false;
+        }
+        else
+        {
+
         }
     }
         break;
     case 3://分类，检测有没有该分类
     {
-        if(!shop->newData_classification(new_data))
+        if(!shop->newData_classification(name,new_data))
         {
             return false;
         }
     }
 
         break;
-//    case 4://售价，大于会员价和进价
-//    {
-
-//    }
-//        break;
-//    case 5://会员价，大于进价小于售价
-//        break;
-//    case 6://进价，小于会员价和售价
-//        break;
-//    case 7://库存，大于0
-//        break;
-    case 8://单位，检测有没有同单位
+    case 4:
+    {
+        if(!shop->newData_price(name,new_data.toDouble(),1))
+        {
+            return false;
+        }
         break;
+    }
+    case 5:
+    {
+
+        if(!shop->newData_price(name,new_data.toDouble(),2))
+        {
+            return false;
+        }
+        break;
+    }
+    case 6:
+    {
+        if(!shop->newData_price(name,new_data.toDouble(),3))
+        {
+            return false;
+        }
+        break;
+    }
+
     default:
         break;
 
@@ -213,32 +249,37 @@ good::~good()
 void good::on_parentClassificationClicked(QString ParentClassification)
 {
     qDebug()<<"点击商品界面的父分类"<<ParentClassification;
-    ui->tableWidget->clear();
-    // 设置列数
-    ui->tableWidget->setColumnCount(8);
-    ui->tableWidget->setRowCount(0);
-    ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "商品名称" << "条码" << "分类" << "售价" << "会员价" << "进价" << "库存" << "单位");
+
+
+
     QJsonArray goods=shop->goods_list_by_classification(ParentClassification,true);
+    qDebug()<<goods;
+    tablewidget_update(goods);
+}
+
+void good::on_subClassificationClicked(QString SubClassification_Name)
+{
+    qDebug()<<"点击商品界面的子分类"<<SubClassification_Name;
+
+
+
+    QJsonArray goods=shop->goods_list_by_classification(SubClassification_Name,false);
     qDebug()<<goods;
     tablewidget_update(goods);
 }
 
 void good::onItemSelectionChanged()
 {
-//    if(ui->tableWidget->currentColumn()==0)//如果选中的单元格为商品名
-//    {
+    if(ui->tableWidget->currentColumn()==6)//如果选中的单元格为库存
+    {
 
-////        QTableWidgetItem * item=ui->tableWidget->item(ui->tableWidget->currentRow(),0);
-////        goodName_recently=item->text();
-
-
-
-////        qDebug()<<"最近选中的商品名"<<goodName_recently;
-////        qDebug()<<"商品名临时储存"<<goodName_temporary;
-////        qDebug()<<"商品已修改的数据"<<modify_goods;
-//      QMessageBox::warning(this, "警告", "商品名不能更改！");
-
-//    }
+        ui->inventory->setEnabled(true);
+        good_name=ui->tableWidget->item(ui->tableWidget->currentRow(),0)->text();
+    }
+    else
+    {
+        ui->inventory->setEnabled(false);
+    }
 
     if(deleting_goods==false)
     {
@@ -268,6 +309,7 @@ void good::onItemSelectionChanged()
         else
         {
              ui->pushButton->setEnabled(false);
+
         }
 
     }
@@ -293,171 +335,106 @@ void good::on_cell_changed(int row, int column)
         QString new_data = item1->text();
         qDebug()<<"new_data: "<<new_data;
         //给新数据设立条件
-        bool a=newData(new_data,column+1);
-        qDebug()<<"newData(new_data,column+1):"<<a;
+        QString name=ui->tableWidget->item(row, 0)->text();
+        bool a=newData(name,new_data,column+1);
+        qDebug()<<"newData():"<<a;
         if(!a)
         {
-            switch (column+1) {
-//            case 1://商品名不能与其他商品名重复
-//            {QMessageBox::warning(this, "警告", "商品名不能与其他商品名重复！");
-//                // 将名称恢复到上一个数据
-//                QString old_name;
-//               ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, new QTableWidgetItem(old_name)); // 将名称插入到第 1 列
-//            }
-//                break;
-            case 2://条码不能与其他商品条码重复
+            switch (column+1)
             {
-                QMessageBox::warning(this, "警告", "条码不能与其他商品条码重复！");
-                //将单元格数据恢复到上一次双击的商品名
-                user_edit=false;
-                ui->tableWidget->item(row, column)->setText(data_doubleClick_LastTime);
-                user_edit=true;
+
+            case 2://条码不能与其他商品条码重复
+
+                QMessageBox::warning(this, "警告", "条码不能与其他商品条码重复！");         
+                  break;
 
 
-            }
-                break;
+
             case 3://未存在该分类
                 QMessageBox::warning(this, "警告", "未存在该分类！");
                 break;
+            case 4://售价必须大于进价和会员价
+                QMessageBox::warning(this, "警告", "售价必须大于进价和会员价！");
+                break;
+            case 5:                QMessageBox::warning(this, "警告", "会员价必须大于进价和小于售价！");
 
+                break;
+            case 6:                QMessageBox::warning(this, "警告", "进货价必须大于会员价和售价！");
+break;
             case 8://未存在该单位
                 QMessageBox::warning(this, "警告", "未存在该单位！");
                 break;
             }
+            //将单元格数据恢复到上一次双击的商品名
+            user_edit=false;
+            ui->tableWidget->item(row, column)->setText(data_doubleClick_LastTime);
+            user_edit=true;
             return;
         }
 
-        switch (column+1)
-        {
-        case 4://售价必须大于会员价
-        {
-         double memberPrice  =ui->tableWidget->item(row,column+1)->text().toDouble();//获取同一行的会员价
-         qDebug()<<"memberPrice："<<memberPrice ;
-         if(new_data.toDouble()<=memberPrice)
-         {
-             QMessageBox::warning(this, "警告", "售价必须大于进价和会员价！");
-             ui->tableWidget->item(row,column)->setText(data_doubleClick_LastTime);
-             return ;
-         }
-        }
-           break;
-        case 5://会员价必须大于进价小于售价
-            QMessageBox::warning(this, "警告", "会员价必须大于进价小于售价！");
-            break;
-        case 6://进价必须小于售价和会员价
-            QMessageBox::warning(this, "警告", "进价必须小于售价和会员价！");
-            break;
-        case 7://库存必须大于0
-            QMessageBox::warning(this, "警告", "库存必须大于0！");
-            break;
-        }
+//        switch (column+1)
+//        {
+//        case 4://售价必须大于会员价
+//        {
+//         double memberPrice  =ui->tableWidget->item(row,column+1)->text().toDouble();//获取同一行的会员价
+//         qDebug()<<"memberPrice："<<memberPrice ;
+//         if(new_data.toDouble()<=memberPrice)
+//         {
+//             QMessageBox::warning(this, "警告", "售价必须大于进价和会员价！");
+//             ui->tableWidget->item(row,column)->setText(data_doubleClick_LastTime);
+//             return ;
+//         }
+//        }
+//           break;
+//        case 5://会员价必须大于进价小于售价
+//            QMessageBox::warning(this, "警告", "会员价必须大于进价小于售价！");
+//            break;
+//        case 6://进价必须小于售价和会员价
+//            QMessageBox::warning(this, "警告", "进价必须小于售价和会员价！");
+//            break;
+//        case 7://库存必须大于0
+//            QMessageBox::warning(this, "警告", "库存必须大于0！");
+//            break;
+//        }
 
         QString shop_name;
         QTableWidgetItem * item2=ui->tableWidget->item(row,0);//已修改（界面上的修改）的单元格所对应的商品名单元格
         shop_name=item2->text();
         qDebug() << "商品名" << shop_name << ",更改属性 " << header_text << " 更改为: " << new_data;
-//        if(header_text=="商品名称")//如果更改的是商品名，则把原商品名赋给shop_name，然后在modify_goods相应的value添加商品名修改记录
-//        {
-////            QMapIterator<QString, QString> iter(goodName_temporary);
-////               while (iter.hasNext())
-////               {
-////                   iter.next();
-////                   // 如果key等于goodName_recently，更新其对应的value
-////                   if (iter.key() == goodName_recently) {
-////                       shop_name=goodName_recently;
-////                       goodName_temporary[goodName_recently] = new_data;
-////                       break;
-////                   }
-////                   // 如果value等于goodName_recently，更新该value的值
-////                   if (iter.value() == goodName_recently)
-////                   {
-////                       //QMap<QString, QString>::iterator i = goodName_temporary.find(iter.key());
-////                       shop_name=iter.key();
-////                       goodName_temporary[iter.key()] = new_data;
-////                       break;
-////                   }
-////               }
 
-////            qDebug() << "商品名" << shop_name << ",更改属性 " << header_text << " 更改为: " << new_data;
-//            QMessageBox::warning(this, "警告", "商品名不能更改！");
-//            return;
-//        }
-//        else
-//        {
-//            QTableWidgetItem * item2=ui->tableWidget->item(row,0);//已修改（界面上的修改）的单元格所对应的商品名单元格
-//            shop_name=item2->text();qDebug() << "商品名" << shop_name << ",更改属性 " << header_text << " 更改为: " << new_data;
-//        }
-
-
-        // 把更改的数据存放到QMap中
-
-//        if (modify_goods.contains(shop_name))
-//        { // 如果QMap中已经有该商品名对应的QJsonObject对象，则修改该对象中的属性
-//            QJsonObject obj = modify_goods[shop_name];
-//            obj[header_text] = new_data;
-//            modify_goods[shop_name] = obj;
-//        }
-//        else
-//        { /*// 如果QMap中没有该商品名对应的QJsonObject对象，查找该商品名是否为原数据
-//            bool  found_key_or_value=false;
-//            QMapIterator<QString, QString> iter(goodName_temporary);
-//                while (iter.hasNext())
-//                {
-//                    iter.next();
-//                    // 如果value等于shop_name，则将所对应的key值赋值给shop_name
-//                    if (iter.value() == shop_name)
-//                    {
-//                        shop_name=iter.key();
-//                        QJsonObject obj = modify_goods[shop_name];
-//                        obj[header_text] = new_data;
-//                        modify_goods[shop_name] = obj;
-//                        found_key_or_value=true;
-//                        break;
-//                    }
-
-//                }*/
-
-//                //如果找不到则创建一个新的对象，并插入到QMap中
-//                    //if(found_key_or_value==false)
-//                    //{
-//                         QJsonObject obj;
-//                         obj[header_text] = new_data;
-//                         modify_goods.insert(shop_name,obj);
-//                   // }
-//        }
     }
 
 }
 
 
-void good::on_selection_changed(const QItemSelection& , const QItemSelection&)
-{
+//void good::on_selection_changed(const QItemSelection& , const QItemSelection&)
+//{
 
-    if(deleting_goods==false)
-    {
-        rows.clear();//删除之前储存的即将删除的商品行
-        goodsNames.clear();
-        QModelIndexList indexes = ui->tableWidget->selectionModel()->selectedRows();
-        //foreach语法遍历选中的QModelIndexList对象indexes，其中QModelIndex表示Qt框架中的一个单元格或者列表项的模型索引
-        foreach (QModelIndex index, indexes) //index会被设置为QModelIndexList对象中的一个元素，然后我们可以使用index对象的row()方法来获取该索引对应的行号
-        {
-            int row = index.row();
-            if (!rows.contains(row))
-            {
-                //把删除按钮设置为可点击
-                ui->pushButton->setEnabled(true);
-                rows.append(row);
-                QTableWidgetItem * item=ui->tableWidget->item(row,0);
-                QString shop_name=item->text();
-                goodsNames.append(shop_name);
-                qDebug()<<"选中商品的商品名"<<shop_name;
-            }
-        }
-        qDebug() << "Selected rows: " << rows;
-    }
+//    if(deleting_goods==false)
+//    {
+//        rows.clear();//删除之前储存的即将删除的商品行
+//        goodsNames.clear();
+//        QModelIndexList indexes = ui->tableWidget->selectionModel()->selectedRows();
+//        //foreach语法遍历选中的QModelIndexList对象indexes，其中QModelIndex表示Qt框架中的一个单元格或者列表项的模型索引
+//        foreach (QModelIndex index, indexes) //index会被设置为QModelIndexList对象中的一个元素，然后我们可以使用index对象的row()方法来获取该索引对应的行号
+//        {
+//            int row = index.row();
+//            if (!rows.contains(row))
+//            {
+//                //把删除按钮设置为可点击
+//                ui->pushButton->setEnabled(true);
+//                rows.append(row);
+//                QTableWidgetItem * item=ui->tableWidget->item(row,0);
+//                QString shop_name=item->text();
+//                goodsNames.append(shop_name);
+//                qDebug()<<"选中商品的商品名"<<shop_name;
+//            }
+//        }
+//        qDebug() << "Selected rows: " << rows;
+//    }
 
 
-}
+//}
 
 
 
@@ -484,8 +461,79 @@ void good::on_pushButton_clicked()
         //删除
         //最后真正删除商品
         qDebug()<<"即将真正删除的商品"<<goodsNames;
-       // qDebug()<<shop->delete_goods_by_goodName1(goodsNames);
+        qDebug()<<shop->delete_goods_by_goodName1(goodsNames);
 
     }
     deleting_goods=false;
+}
+
+void good::on_pushButton_5_clicked()
+{
+    TableWidgetHeadInit();
+    QJsonArray goods=shop->goods_list();
+    tablewidget_update(goods);
+}
+
+void good::on_lineEdit_textChanged(const QString &arg1)
+{
+    QJsonArray goods=shop->GoodsSearch(arg1);
+    qDebug()<<"搜索词"<<arg1;
+    if(goods.size()==0)
+    {
+        tablewidgetInit();
+        return;
+
+    }
+   tablewidget_update(goods);
+}
+
+void good::on_pushButton_6_clicked()
+{
+    AddGood *NewGood=new AddGood();
+    NewGood->show();
+    connect(NewGood,&AddGood::add_good_finished,this,&good::on_pushButton_5_clicked);//添加商品完成后触发"全部商品"按钮（更新）
+}
+
+
+
+void good::on_dateEdit_userDateChanged(const QDate &date)
+{
+    QDate anotherDate=ui->dateEdit_2->date();
+    if(date>anotherDate)
+    {
+
+        startDateTime = QDateTime(anotherDate, QTime(0,0,0));
+        endDateTime = QDateTime(date, QTime(23,59,59));
+    }
+    else
+    {
+        startDateTime = QDateTime(date, QTime(0,0,0));
+        endDateTime = QDateTime(anotherDate, QTime(23,59,59));
+    }
+    qDebug()<<"startDateTime:"<<startDateTime<<"endDateTime"<<endDateTime;
+    tablewidget_update(shop->goods_list_by_dateRange(startDateTime.toString("yyyy-MM-dd hh:mm:ss"),endDateTime.toString("yyyy-MM-dd hh:mm:ss")));
+}
+
+void good::on_dateEdit_2_userDateChanged(const QDate &date)
+{
+    QDate anotherDate=ui->dateEdit->date();
+    if(date>anotherDate)
+    {
+
+        startDateTime = QDateTime(anotherDate, QTime(0,0,0));
+        endDateTime = QDateTime(date, QTime(23,59,59));
+    }
+    else
+    {
+        startDateTime = QDateTime(date, QTime(0,0,0));
+        endDateTime = QDateTime(anotherDate, QTime(23,59,59));
+    }
+    qDebug()<<"startDateTime:"<<startDateTime<<"endDateTime"<<endDateTime;
+    tablewidget_update(shop->goods_list_by_dateRange(startDateTime.toString("yyyy-MM-dd hh:mm:ss"),endDateTime.toString("yyyy-MM-dd hh:mm:ss")));
+}
+
+void good::on_inventory_clicked()
+{
+    Inventory *inventory=new Inventory(good_name,this);
+    inventory->show();
 }

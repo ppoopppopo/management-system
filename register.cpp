@@ -67,8 +67,10 @@ void Register::on_pushButton_clicked()
     {
         QMessageBox::information(this,"消息","注册成功",QMessageBox::Ok);
         //用connect函数，当this->close()执行时，立即最大化login窗口
+        login *log=new login;
 
-        this->close();
+        log->show();
+        delete  this;
     }
 }
 

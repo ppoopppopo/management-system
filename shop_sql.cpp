@@ -46,26 +46,24 @@ shop_sql::shop_sql()
     }
 
     //建商品表
-    if(sql_query.exec("CREATE TABLE IF NOT EXISTS goods (name TEXT,bar_code BIGINT,classification TEXT,selling_price DOUBLE,member_price DOUBLE,purchase_price DOUBLE,inventory INT,unit TEXT);"))
+    if(sql_query.exec("CREATE TABLE IF NOT EXISTS goods ("
+                      "name TEXT PRIMARY KEY,"
+                      "bar_code BIGINT,"
+                      "classification TEXT,"
+                      "selling_price DOUBLE,"
+                      "member_price DOUBLE,"
+                      "purchase_price DOUBLE,"
+                      "inventory INT DEFAULT 0,"
+                      "InventoryCap INT DEFAULT 0,"
+                      "MinimumInvenTory INT DEFAULT 0, "
+                      "unit TEXT,"
+                      "creat_time  TEXT   NOT NULL DEFAULT (DATETIME('now', 'localtime') ) "
+                      ");"
+                      ))
     {
         qDebug()<<"CREATE table goods ok";
     }
-//    if(sql_query.exec("CREATE TABLE IF NOT EXISTS Goods ("
-//                      "Name TEXT,"
-//                      "BarCode BIGINT,"
-//                      "Classification TEXT,"
-//                      "SellingPrice DOUBLE,"
-//                      "MemberPrice DOUBLE,"
-//                      "PurchasePrice DOUBLE,"
-//                      "Inventory INTEGER,"
-//                      "Unit TEXT);"))
-//    {
-//        qDebug() << "CREATE table Goods OK";
-//    }
-//    else
-//    {
-//        qDebug() << "Error creating table Goods:" << sql_query.lastError().text();
-//    }
+
 
     //建分类表
     if(sql_query.exec("CREATE TABLE IF NOT EXISTS Classification ("
@@ -179,6 +177,19 @@ shop_sql::shop_sql()
     PaymentMethod：支付方式，使用 TEXT 类型存储，不能为空。
     RechargeTime：充值时间，使用 TEXT 类型存储，自动填充。
     PRIMARY KEY (MemberName, RechargeTime)：设置复合主键，以便唯一标识一条充值记录，其中 MemberName 和 RechargeTime 都不能为空。*/
+
+    //建单位表
+    if(sql_query.exec("CREATE TABLE IF NOT EXISTS Unit ("
+                      "Unit TEXT PRIMARY KEY NOT NULL UNIQUE"
+                      ");"))
+    {
+        qDebug() << "CREATE table Unit OK";
+    }
+    else
+    {
+        qDebug() << "Error creating table Unit:" << sql_query.lastError().text();
+    }
+Unit_init();
 }
 
 shop_sql::~shop_sql()
@@ -186,6 +197,26 @@ shop_sql::~shop_sql()
 
 
     qDebug()<<"delete shop_sql ";//count;
+}
+
+void shop_sql::Unit_init()
+{
+    QStringList Unit={"瓶","罐","盒","袋","杯","包","支","粒","箱","根","份"};
+    QSqlQuery query;
+    for(int i=0;i<Unit.size();i++)
+    {
+        if(query.exec(QString("INSERT INTO Unit VALUES('"+Unit[i]+"')")))
+        {
+            qDebug()<<"添加单位"+Unit[i]+"成功";
+        }
+        else
+        {
+            qDebug()<<"添加单位"+Unit[i]+"失败"<<query.lastError();
+
+        }
+    }
+
+
 }
 
 
@@ -215,7 +246,16 @@ void shop_sql::new_user_save(QString name, QString sex, QString age,QString pass
 void shop_sql::addParentClassification(QString ParentClassification)
 {
     QSqlQuery query;
-    qDebug()<<"sql语句"<<query.exec(QString("INSERT INTO Classification(ParentClassification) VALUES('%1')").arg(ParentClassification));
+    if(query.exec(QString("INSERT INTO Classification(ParentClassification) VALUES('%1')").arg(ParentClassification)))
+    {
+        qDebug()<<"添加父分类成功";
+
+    }
+    else
+    {
+        qDebug()<<"添加父分类失败";
+
+    }
 
 }
 
@@ -230,6 +270,36 @@ void shop_sql::addSubClassification(QString ParentClassRecently, QString newSubC
        qDebug() <<"sql语句"<<query.exec(QString("update Classification set Subclassification='%1' where ParentClassification='%2'").arg(newSubClass,ParentClassRecently));
 
     }
+    else
+    {
+        qDebug()<<"sql语句"<<query.exec(QString("INSERT INTO Classification(ParentClassification,Subclassification) VALUES('%1','%2')").arg(ParentClassRecently,newSubClass));
+    }
+}
+
+void shop_sql::add_new_good(QString name, QString bar_code, QString classification, QString selling_price, QString member_price, QString purchase_price, QString InventoryCap, QString MinimumInvenTory, QString unit)
+{
+    QSqlQuery query;
+    if(query.exec(QString("INSERT INTO goods("
+                  "name,"
+                  "bar_code,"
+                  "classification,"
+                  "selling_price,"
+                  "member_price,"
+                  "purchase_price,"
+                  "InventoryCap,"
+                  "MinimumInvenTory,"
+                  "unit) "
+                  "VALUES('%1','%2','%3','%4','%5','%6','%7','%8','%9')")
+                  .arg(name,bar_code,classification,selling_price,member_price,purchase_price,InventoryCap,MinimumInvenTory,unit)))
+    {
+        qDebug()<<"添加商品成功";
+    }
+    else
+    {
+        qDebug()<<"添加商品失败: "<<query.lastError();
+    }
+
+
 }
 //查询某表中某字段中是否存在该内容，参数一表名，参数二为字段，参数三字段内容
 bool shop_sql::is_exist(QString table, QString field, QString content)
@@ -344,7 +414,23 @@ QStringList shop_sql::child_classification_list(QString father_classification)
 
 QStringList shop_sql::goods_of_ParentClassification(QString ParentClassification)
 {
-   // return;
+    // return;
+}
+
+QStringList shop_sql::Inventory_up_and_down(QString name)
+{
+    QSqlQuery query(database);
+    QStringList Inventory_up_and_down;
+    if(query.exec("select InventoryCap,MinimumInvenTory from goods where name = '"+name+"'"))
+    {
+        if(query.next())
+        {
+            Inventory_up_and_down.append(query.value(0).toString());
+            Inventory_up_and_down.append(query.value(1).toString());
+
+        }
+        return  Inventory_up_and_down;;
+    }
 }
 
 int shop_sql::father_classification_onlyone(QString father_classification)
@@ -388,8 +474,7 @@ QJsonArray shop_sql::end_of_searching(QString text)
      QJsonArray result;
 
          QSqlQuery query;
-
-         if (query.exec("SELECT name,purchase_price,inventory FROM goods WHERE name LIKE '%" + text + "%'"))
+         if (query.exec("SELECT name,purchase_price,inventory FROM goods WHERE name LIKE '%" + text + "%' OR bar_code LIKE '%" + text + "%'"))
          {
              while (query.next())
              {
@@ -405,14 +490,54 @@ QJsonArray shop_sql::end_of_searching(QString text)
          {
              qDebug() << "Failed to execute query!";
          }
-       return result;  // 返回 QJsonArray 对象
+         return result;  // 返回 QJsonArray 对象
+}
+
+QJsonArray shop_sql::GoodsSearch(QString text)
+{
+    QJsonArray result;
+
+        QSqlQuery query;
+        if (query.exec("SELECT name,"
+                       "bar_code,"
+                       "classification,"
+                       "selling_price,"
+                       "member_price,"
+                       "purchase_price,"
+                       "inventory,"
+                       "unit "
+                  "FROM goods "
+                 "WHERE name LIKE '%"+text+"%' OR "
+                       "bar_code LIKE '%"+text+"%';"))
+        {
+            while (query.next())
+            {
+
+                QJsonObject temp;
+                temp["name"]=query.value(0).toString();
+                temp["bar_code"]=query.value(1).toString();
+                temp["classification"]=query.value(2).toString();
+                temp["selling_price"]=query.value(3).toString();
+                temp["member_price"]=query.value(4).toString();
+                temp["purchase_price"]=query.value(5).toString();
+                temp["inventory"]=query.value(6).toString();
+                temp["unit"]=query.value(7).toString();
+                result.append(temp);
+            }
+            qDebug() << "商品管理搜索结束，数据为"<<result;
+        }
+        else
+        {
+            qDebug() << "Failed to execute query!";
+        }
+        return result;  // 返回 QJsonArray 对象
 }
 
 QJsonArray shop_sql::goods_list()
 {
     QJsonArray list;
     QSqlQuery query(database);
-    if(query.exec("select * from goods"))
+    if(query.exec("select name,bar_code,classification,selling_price,member_price,purchase_price,inventory,unit from Goods"))
     {
         while (query.next())
         {
@@ -431,13 +556,33 @@ QJsonArray shop_sql::goods_list()
     return list;
 }
 
+QStringList shop_sql::Unit_list()
+{
+    QStringList list;
+    QSqlQuery query;
+    if(query.exec("select Unit from Unit"))
+    {
+        while(query.next())
+        {
+            list.append(query.value(0).toString());
+        }
+    }
+    else
+    {
+        qDebug()<<"获取单位列表失败"<<query.lastError();
+    }
+    return list;
+}
+
+
 QJsonArray shop_sql::goods_list_by_classification(QString Conditional, bool ParentClassification)
 {
     QSqlQuery query;
     QJsonArray goods;
     qDebug()<<"Conditional:"<<Conditional;
     //无论Conditional为父分类或子分类都要先根据Conditional提取商品相关信息
-    if(query.exec("select * from goods where classification = '"+Conditional+"'"))
+    if(query.exec("select name,bar_code,classification,selling_price,member_price,purchase_price,inventory,unit "
+                  "from goods where classification = '"+Conditional+"'"))
     {
         while (query.next())
         {
@@ -458,10 +603,12 @@ QJsonArray shop_sql::goods_list_by_classification(QString Conditional, bool Pare
     {
         if(query.exec("select SubClassification from Classification where ParentClassification ='"+Conditional+"'"))
         {
-            while (query.next())
+            while (query.next()&&query.value(0).toString()!="")
             {
+
                 QSqlQuery query2;
-                if(query2.exec("select * from goods where classification ='"+query.value(0).toString()+"'"))
+                if(query2.exec("select name,bar_code,classification,selling_price,member_price,purchase_price,inventory,unit "
+                               "from goods where classification ='"+query.value(0).toString()+"'"))
                 {
                     while (query2.next())
                     {
@@ -484,6 +631,40 @@ QJsonArray shop_sql::goods_list_by_classification(QString Conditional, bool Pare
     return goods;
 }
 
+QJsonArray shop_sql::goods_list_by_dateRange(QString startDate, QString endDate)
+{
+    QJsonArray goods;
+    QString queryStr = "SELECT name,bar_code,classification,selling_price,member_price,purchase_price,inventory,unit "
+                       "FROM goods WHERE creat_time BETWEEN :startDate AND :endDate";
+    QSqlQuery query;
+    query.prepare(queryStr);
+    query.bindValue(":startDate", startDate);
+    query.bindValue(":endDate", endDate);
+    if (query.exec())
+    {
+        while (query.next())
+        {
+            QJsonObject temp;
+            temp["name"]=query.value(0).toString();
+            temp["bar_code"]=query.value(1).toString();
+            temp["classification"]=query.value(2).toString();
+            temp["selling_price"]=query.value(3).toString();
+            temp["member_price"]=query.value(4).toString();
+            temp["purchase_price"]=query.value(5).toString();
+            temp["inventory"]=query.value(6).toString();
+            temp["unit"]=query.value(7).toString();
+            qDebug()<<"temp:"<<temp;
+            goods.append(temp);
+        }
+    }
+    else
+    {
+        qDebug()<<"按照时间查询失败："<<query.lastError().text();
+    }
+    return goods;
+
+}
+
 
 
 QJsonArray shop_sql::Name_PurchasePrice_Inventory_of_goods(QString Conditional,bool ParentClassification)
@@ -494,7 +675,7 @@ QJsonArray shop_sql::Name_PurchasePrice_Inventory_of_goods(QString Conditional,b
     //无论Conditional为父分类或子分类都要先根据Conditional提取商品相关信息
     if(query.exec("select name,purchase_price,inventory from goods where classification = '"+Conditional+"'"))
     {
-        while (query.next())
+        while (query.next()&&query.value(0).toString()!="")
         {
             qDebug()<<"query"<<query.value(0).toString()<<query.value(1).toDouble()<<query.value(2).toInt();
             QJsonObject good;
@@ -531,6 +712,25 @@ QJsonArray shop_sql::Name_PurchasePrice_Inventory_of_goods(QString Conditional,b
         }
     }
     return goods;
+}
+
+QJsonArray shop_sql::All_Name_PurchasePrice_Inventory_of_goods()
+{QSqlQuery query(database);
+    QJsonArray goods;
+
+    query.exec("select name,purchase_price,inventory from goods");
+    while (query.next())
+    {
+        qDebug()<<"query"<<query.value(0).toString()<<query.value(1).toDouble()<<query.value(2).toInt();
+        QJsonObject good;
+        good["name"]=query.value(0).toString();
+        good["purchase_price"]=query.value(1).toDouble();
+        good["inventory"]=query.value(2).toInt();
+        goods.append(good);
+
+    }
+    return goods;
+
 }
 
 QJsonObject shop_sql::PurchaseLeft_GoodImformation(QString name)
@@ -609,28 +809,115 @@ QStringList shop_sql::goodsNames_list()
     return goodsNames;
 }
 
-bool shop_sql::newData_barcode(QString bar_code)
+bool shop_sql::newData_barcode(QString name,QString bar_code)
 {
     QSqlQuery query(database);
-    qDebug()<<query.exec(QString("select bar_code from goods where bar_code='%1'").arg(bar_code.toInt()));
-    if(query.next())
-    {
-        qDebug()<<"找到条码"<<query.value(0);
-        return false;
-    }
-    return true;
+    qDebug()<<query.exec("UPDATE goods SET bar_code = '"+bar_code+"' WHERE name = '"+name+"' AND NOT EXISTS (SELECT name FROM goods WHERE bar_code = '"+bar_code+"' )");
+    int num = query.numRowsAffected();
+    return num>0 ? true:false;
 }
 
-bool shop_sql::newData_classification(QString classification)
+bool shop_sql::newData_classification(QString name,QString classification)
 {
     QSqlQuery query(database);
-    qDebug()<<query.exec(QString("select classification from goods where bar_code='%1'").arg(classification));
-    if(query.next())
+    qDebug()<<query.exec("UPDATE goods SET classification = '"+classification+"' WHERE name = '"+name+"' AND  EXISTS "
+                         "(SELECT * FROM Classification WHERE '"+classification+"' IN (ParentClassification, Subclassification) )");
+    int num = query.numRowsAffected();
+    return num>0 ? true:false;
+}
+
+bool shop_sql::newData_price(QString name, double price, int price_type)
+{
+    QSqlQuery query(database);
+    double selling_price,member_price,purchase_price;
+    double new_price=price;
+    if(query.exec("SELECT selling_price,member_price,purchase_price from goods where name='"+name+"'"))
     {
-        qDebug()<<"找到分类"<<query.value(0);
+        if(query.next())
+        {
+            selling_price=query.value(0).toDouble();
+            member_price=query.value(1).toDouble();
+            purchase_price=query.value(2).toDouble();
+            qDebug()<<"更新价格之前，先拿商品"<<name<<"的进价："<<selling_price<<"，会员价："<<""<<member_price<<"，进价："<<purchase_price;
+        }
+        switch (price_type)
+        {
+        case 1:
+        {
+            if(new_price>member_price)
+            {
+                //update..
+                query.prepare("UPDATE goods SET selling_price = :selling_price WHERE name = :name");
+                query.bindValue(":selling_price", new_price);
+                query.bindValue(":name",name);
+                if(query.exec())
+                {
+                    return true;
+
+                }
+                qDebug()<<query.lastError();
+                return false;
+
+            }
+            break;
+        }
+        case 2:
+        {
+            if(new_price>purchase_price&&new_price<selling_price)
+            {
+                query.prepare("UPDATE goods SET member_price = :member_price WHERE name = :name");
+                query.bindValue(":member_price", new_price);
+                query.bindValue(":name",name);
+                if(query.exec())
+                {
+                    return true;
+
+                }                qDebug()<<query.lastError();
+
+                return false;
+            }
+           break;
+        }
+            case 3:
+            {
+                if(new_price<member_price)
+                {
+                    query.prepare("UPDATE goods SET purchase_price = :purchase_price WHERE name = :name");
+                    query.bindValue(":purchase_price", new_price);
+                    query.bindValue(":name",name);
+                    if(query.exec())
+                    {
+                        return true;
+
+                    }                qDebug()<<query.lastError();
+
+                    return false;
+
+                }
+              break;
+            }
+        default:
+           break;
+        }
+        return false;
+    }
+}
+
+bool shop_sql::new_Data_Inventory_up_and_down(QString name,int InventoryCap, int MinimumInvenTory)
+{
+    QSqlQuery query(database);
+    query.prepare("UPDATE goods SET InventoryCap = :InventoryCap, MinimumInvenTory = :MinimumInvenTory WHERE name = :name");
+    query.bindValue(":InventoryCap", InventoryCap);
+    query.bindValue(":MinimumInvenTory", MinimumInvenTory);
+    query.bindValue(":name", name);
+    if(query.exec())
+    {
         return true;
     }
-    return false;
+    else
+    {
+        return false;
+    }
 }
 
 bool shop_sql::Exist_ParentClassification(QString newParentClassification)

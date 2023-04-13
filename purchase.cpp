@@ -28,7 +28,7 @@ Purchase::Purchase(QWidget *parent) :
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);//table自适应宽
 //Connect_Init();
 
-ui->lineEdit->setPlaceholderText("商品名");
+ui->lineEdit->setPlaceholderText("商品名/条形码");
 
 
 QDate currentDate = QDate::currentDate();
@@ -40,6 +40,7 @@ QString currentDateStr = " "+year + "-" + month + "-" + day;
 
 ui->label_purchase_id->setText(" PUR20230219-1");
 ui->label_purchase_date->setText(currentDateStr);
+GoodsInformationRight_Init();
 }
 
 Purchase::~Purchase()
@@ -60,6 +61,12 @@ void Purchase::comboxs_of_classification_init()
     vlayout->classificationUI_init();//初始化编辑分类界面
     connect(vlayout, &classification::Purchase_parentClassificationClicked, this, &Purchase::on_parentClassificationClicked);//分类管理的父分类点击事件
    connect(vlayout, &classification::Purchase_subClassificationClicked, this, &Purchase::on_SubClassification_clicked);//分类管理的父分类点击事件
+   connect(vlayout, &classification::close,this,&Purchase::QLayoutItem_Clear);
+}
+
+void Purchase::GoodsInformationRight_Init()
+{
+    GoodsInformationRight_Update(shop->All_Name_PurchasePrice_Inventory_of_goods());
 }
 
 void Purchase::on_ParentClassification_clicked(QPushButton* button)
@@ -120,7 +127,21 @@ void Purchase::GoodsInformationRight_Update(QJsonArray goods)
 
 
 }
+void Purchase::QLayoutItem_Clear()
+{
+    QLayoutItem *child;
+     while ((child = ui->VLayoutClassification->takeAt(0)) != 0)
+     {
+            //setParent为NULL，防止删除之后界面不消失
+            if(child->widget())
+            {
+                child->widget()->setParent(NULL);
+            }
 
+            delete child;
+     }
+     comboxs_of_classification_init();
+}
 void Purchase::on_parentClassificationClicked(QString ParentClassification)
 {
         qDebug()<<"收到分类管理的信号"<<ParentClassification;
@@ -268,7 +289,15 @@ void Purchase::onDeleteButtonClicked(int row)
 
 void Purchase::on_lineEdit_textChanged(const QString &arg1)
 {
-   QJsonArray goods=shop->end_of_searching(ui->lineEdit->text());
+
+   QJsonArray goods=shop->end_of_searching(arg1);
+   qDebug()<<"搜索后拿到的商品数据"<<goods;
+   if(goods.size()==0)
+   {
+       GoodsInformationRight_Init();
+       return;
+
+   }
    GoodsInformationRight_Update(goods);
 
 }

@@ -23,8 +23,7 @@ QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     login *log=new login;
 
     log->show();
-
-
+shop->add_new_good("石头市","","石头","800","600","500","10","2","座");
 
     //delete shop;
 

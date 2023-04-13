@@ -38,6 +38,7 @@ signals:
     void Purchase_parentClassificationClicked(QString parentClassification);//进货管理父分类点击信号
     void Purchase_subClassificationClicked(QString subClassification);//子分类点击信号
     void Good_parentClassificationClicked(QString parentClassification);
+    void Good_subClassificationClicked(QString SubClassification_Name);
     void close();//关闭信号
     void send_ParentClassRecently(QString str);
 private slots:

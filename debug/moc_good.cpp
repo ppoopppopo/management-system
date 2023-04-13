@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_good_t {
-    QByteArrayData data[12];
-    char stringdata0[194];
+    QByteArrayData data[19];
+    char stringdata0[347];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -35,23 +35,35 @@ static const qt_meta_stringdata_good_t qt_meta_stringdata_good = {
 QT_MOC_LITERAL(0, 0, 4), // "good"
 QT_MOC_LITERAL(1, 5, 30), // "on_parentClassificationClicked"
 QT_MOC_LITERAL(2, 36, 0), // ""
-QT_MOC_LITERAL(3, 37, 22), // "onItemSelectionChanged"
-QT_MOC_LITERAL(4, 60, 15), // "on_cell_changed"
-QT_MOC_LITERAL(5, 76, 20), // "on_selection_changed"
-QT_MOC_LITERAL(6, 97, 14), // "QItemSelection"
-QT_MOC_LITERAL(7, 112, 21), // "on_pushButton_clicked"
-QT_MOC_LITERAL(8, 134, 30), // "onTableWidgetCellDoubleClicked"
-QT_MOC_LITERAL(9, 165, 3), // "row"
-QT_MOC_LITERAL(10, 169, 6), // "column"
-QT_MOC_LITERAL(11, 176, 17) // "QLayoutItem_Clear"
+QT_MOC_LITERAL(3, 37, 27), // "on_subClassificationClicked"
+QT_MOC_LITERAL(4, 65, 22), // "onItemSelectionChanged"
+QT_MOC_LITERAL(5, 88, 15), // "on_cell_changed"
+QT_MOC_LITERAL(6, 104, 21), // "on_pushButton_clicked"
+QT_MOC_LITERAL(7, 126, 30), // "onTableWidgetCellDoubleClicked"
+QT_MOC_LITERAL(8, 157, 3), // "row"
+QT_MOC_LITERAL(9, 161, 6), // "column"
+QT_MOC_LITERAL(10, 168, 17), // "QLayoutItem_Clear"
+QT_MOC_LITERAL(11, 186, 23), // "on_pushButton_5_clicked"
+QT_MOC_LITERAL(12, 210, 23), // "on_lineEdit_textChanged"
+QT_MOC_LITERAL(13, 234, 4), // "arg1"
+QT_MOC_LITERAL(14, 239, 23), // "on_pushButton_6_clicked"
+QT_MOC_LITERAL(15, 263, 27), // "on_dateEdit_userDateChanged"
+QT_MOC_LITERAL(16, 291, 4), // "date"
+QT_MOC_LITERAL(17, 296, 29), // "on_dateEdit_2_userDateChanged"
+QT_MOC_LITERAL(18, 326, 20) // "on_inventory_clicked"
 
     },
     "good\0on_parentClassificationClicked\0"
-    "\0onItemSelectionChanged\0on_cell_changed\0"
-    "on_selection_changed\0QItemSelection\0"
+    "\0on_subClassificationClicked\0"
+    "onItemSelectionChanged\0on_cell_changed\0"
     "on_pushButton_clicked\0"
     "onTableWidgetCellDoubleClicked\0row\0"
-    "column\0QLayoutItem_Clear"
+    "column\0QLayoutItem_Clear\0"
+    "on_pushButton_5_clicked\0on_lineEdit_textChanged\0"
+    "arg1\0on_pushButton_6_clicked\0"
+    "on_dateEdit_userDateChanged\0date\0"
+    "on_dateEdit_2_userDateChanged\0"
+    "on_inventory_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -61,7 +73,7 @@ static const uint qt_meta_data_good[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -69,21 +81,33 @@ static const uint qt_meta_data_good[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   49,    2, 0x0a /* Public */,
-       3,    0,   52,    2, 0x0a /* Public */,
-       4,    2,   53,    2, 0x0a /* Public */,
-       5,    2,   58,    2, 0x0a /* Public */,
-       7,    0,   63,    2, 0x08 /* Private */,
-       8,    2,   64,    2, 0x08 /* Private */,
-      11,    0,   69,    2, 0x08 /* Private */,
+       1,    1,   79,    2, 0x0a /* Public */,
+       3,    1,   82,    2, 0x0a /* Public */,
+       4,    0,   85,    2, 0x0a /* Public */,
+       5,    2,   86,    2, 0x0a /* Public */,
+       6,    0,   91,    2, 0x08 /* Private */,
+       7,    2,   92,    2, 0x08 /* Private */,
+      10,    0,   97,    2, 0x08 /* Private */,
+      11,    0,   98,    2, 0x08 /* Private */,
+      12,    1,   99,    2, 0x08 /* Private */,
+      14,    0,  102,    2, 0x08 /* Private */,
+      15,    1,  103,    2, 0x08 /* Private */,
+      17,    1,  106,    2, 0x08 /* Private */,
+      18,    0,  109,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::QString,    2,
+    QMetaType::Void, QMetaType::QString,    2,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    2,    2,
-    QMetaType::Void, 0x80000000 | 6, 0x80000000 | 6,    2,    2,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int,    9,   10,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int,    8,    9,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,   13,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QDate,   16,
+    QMetaType::Void, QMetaType::QDate,   16,
     QMetaType::Void,
 
        0        // eod
@@ -96,25 +120,19 @@ void good::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->on_parentClassificationClicked((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 1: _t->onItemSelectionChanged(); break;
-        case 2: _t->on_cell_changed((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 3: _t->on_selection_changed((*reinterpret_cast< const QItemSelection(*)>(_a[1])),(*reinterpret_cast< const QItemSelection(*)>(_a[2]))); break;
+        case 1: _t->on_subClassificationClicked((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 2: _t->onItemSelectionChanged(); break;
+        case 3: _t->on_cell_changed((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 4: _t->on_pushButton_clicked(); break;
         case 5: _t->onTableWidgetCellDoubleClicked((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 6: _t->QLayoutItem_Clear(); break;
+        case 7: _t->on_pushButton_5_clicked(); break;
+        case 8: _t->on_lineEdit_textChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 9: _t->on_pushButton_6_clicked(); break;
+        case 10: _t->on_dateEdit_userDateChanged((*reinterpret_cast< const QDate(*)>(_a[1]))); break;
+        case 11: _t->on_dateEdit_2_userDateChanged((*reinterpret_cast< const QDate(*)>(_a[1]))); break;
+        case 12: _t->on_inventory_clicked(); break;
         default: ;
-        }
-    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        switch (_id) {
-        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 3:
-            switch (*reinterpret_cast<int*>(_a[1])) {
-            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-            case 1:
-            case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QItemSelection >(); break;
-            }
-            break;
         }
     }
 }
@@ -148,13 +166,13 @@ int good::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 13;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        if (_id < 13)
+            *reinterpret_cast<int*>(_a[0]) = -1;
+        _id -= 13;
     }
     return _id;
 }

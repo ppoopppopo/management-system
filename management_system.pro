@@ -25,7 +25,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11 resources_big
 
 SOURCES += \
+    addgood.cpp \
     classification.cpp \
+    inventory.cpp \
     itemwidget.cpp \
         main.cpp \
     login.cpp \
@@ -37,7 +39,9 @@ SOURCES += \
     xdialog.cpp
 
 HEADERS += \
+    addgood.h \
     classification.h \
+    inventory.h \
     itemwidget.h \
     login.h \
     mainwindow.h \
@@ -48,7 +52,9 @@ HEADERS += \
     xdialog.h
 
 FORMS += \
+    addgood.ui \
     classification.ui \
+    inventory.ui \
     login.ui \
     mainwindow.ui \
     register.ui \

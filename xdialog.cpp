@@ -54,7 +54,7 @@ void XDialog::accept()
             {
                 shop->addParentClassification(newParentClassification);
                 QMessageBox::question(this, tr("成功"), tr("添加成功"), QMessageBox::Yes);
-                emit update_ParentPlassificationUI();
+                emit update_ParentClassificationUI();
             }
             else
             {
@@ -72,11 +72,14 @@ void XDialog::accept()
             }
             if(shop->Exist_SubClassification(newSubClassification))
             {
+
+
                 shop->addSubClassification(this->ParentClassRecently,newSubClassification);
+                emit update_SubClassificationUI();
             }
             else
             {
-                 QMessageBox::question(this, tr("失败"), tr("添加失败"), QMessageBox::Yes);
+                QMessageBox::question(this, tr("提示"), tr("新子分类名已存在"), QMessageBox::Yes);
             }
         }
 

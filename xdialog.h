@@ -27,7 +27,8 @@ public slots:
     void reject() override;//重写
     void receive_ParentClassRecently(QString ParentClassRecently);
 signals:
-    void update_ParentPlassificationUI();
+    void update_ParentClassificationUI();
+    void update_SubClassificationUI();
 private:
     QLineEdit *m_lineEdit;
 

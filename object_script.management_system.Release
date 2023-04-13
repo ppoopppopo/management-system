@@ -1,6 +1,8 @@
 release/qrc_pic.o
 release/qrc_qss.o
+release/addgood.o
 release/classification.o
+release/inventory.o
 release/itemwidget.o
 release/main.o
 release/login.o
@@ -10,7 +12,9 @@ release/shop_sql.o
 release/good.o
 release/purchase.o
 release/xdialog.o
+release/moc_addgood.o
 release/moc_classification.o
+release/moc_inventory.o
 release/moc_itemwidget.o
 release/moc_login.o
 release/moc_mainwindow.o

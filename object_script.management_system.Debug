@@ -1,6 +1,8 @@
 debug/qrc_pic.o
 debug/qrc_qss.o
+debug/addgood.o
 debug/classification.o
+debug/inventory.o
 debug/itemwidget.o
 debug/main.o
 debug/login.o
@@ -10,7 +12,9 @@ debug/shop_sql.o
 debug/good.o
 debug/purchase.o
 debug/xdialog.o
+debug/moc_addgood.o
 debug/moc_classification.o
+debug/moc_inventory.o
 debug/moc_itemwidget.o
 debug/moc_login.o
 debug/moc_mainwindow.o
